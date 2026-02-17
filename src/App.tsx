@@ -9,7 +9,7 @@ import { FooterSection } from "./components/footer-section";
 
 function App() {
   return (
-    <div className="portfolio-container">
+    <div className="max-w-4xl mx-auto px-6 pt-32 pb-20 space-y-24">
       <IntroSection />
       <ExperienceSection />
       <ProjectSection />

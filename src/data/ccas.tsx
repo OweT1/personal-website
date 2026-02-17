@@ -16,7 +16,7 @@ export const ccas: CCA[] = [
     committee: "NUS Students' Sports Club",
     positions: [
       {
-        position: "Marketing Executive",
+        position: "Management Committee Marketing Executive",
         start_date: "October 2022",
         end_date: "October 2023",
       },

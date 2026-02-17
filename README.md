@@ -1,3 +1,3 @@
 # Personal Website
 
-Website built using Vite, React + Typescript.
+Website built using Vite, React + Typescript + TailwindCSS.

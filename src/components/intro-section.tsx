@@ -1,4 +1,5 @@
 import { FaGithub, FaLinkedin, FaFilePdf } from "react-icons/fa";
+import { IoIosMail } from "react-icons/io";
 import profilePic from "@/assets/Owen_Picture.jpg";
 
 export function IntroSection() {
@@ -42,6 +43,16 @@ export function IntroSection() {
             className="text-slate-600 hover:text-blue-600 hover:-translate-y-1 transition-all duration-300"
           >
             <FaLinkedin size={28} />
+          </a>
+
+          {/* Email */}
+          <a
+            href="mailto:owentan2021@gmail.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-slate-600 hover:text-blue-600 hover:-translate-y-1 transition-all duration-300"
+          >
+            <IoIosMail size={28} />
           </a>
 
           {/* Resume Download */}

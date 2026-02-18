@@ -48,25 +48,9 @@ export const ccas: CCA[] = [
         end_date: "September 2023",
       },
       {
-        position: "Welfare Subcommittee Marketing Header",
+        position: "Welfare Subcommittee Marketing Head",
         start_date: "September 2023",
         end_date: "September 2024",
-      },
-    ],
-  },
-  {
-    id: 3,
-    committee: "NUS Mathematics & Statistics Orientation Camp 2023 Committee",
-    positions: [
-      {
-        position: "Publicity Sub-Head",
-        start_date: "October 2022",
-        end_date: "August 2023",
-      },
-      {
-        position: "Safety Officer",
-        start_date: "October 2022",
-        end_date: "August 2023",
       },
     ],
   },

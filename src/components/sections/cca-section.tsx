@@ -17,12 +17,14 @@ export function CCASection() {
             <ul>
               {cca.positions.map((position) => (
                 <li>
-                  <p className="text-orange-600 font-medium">
-                    {position.position}
-                  </p>{" "}
-                  <p className="text-slate-600">
-                    ({position.start_date} - {position.end_date}){" "}
-                  </p>
+                  <div className="flex flex-row justify-between">
+                    <p className="text-orange-600 font-medium">
+                      {position.position}
+                    </p>{" "}
+                    <p className="text-slate-600">
+                      ({position.start_date} - {position.end_date}){" "}
+                    </p>
+                  </div>
                 </li>
               ))}
             </ul>

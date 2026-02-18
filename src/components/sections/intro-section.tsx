@@ -6,7 +6,8 @@ export function IntroSection() {
   return (
     <section
       id="home"
-      className="flex flex-col-reverse md:flex-row items-center justify-between gap-10"
+      // className="flex flex-col-reverse md:flex-row items-center justify-between gap-10" // vertical alignment
+      className="flex flex-row items-center justify-between gap-15"
     >
       <div className="flex-1 text-center md:text-left space-y-6">
         <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight">
@@ -56,9 +57,8 @@ export function IntroSection() {
           </a>
 
           {/* Resume Download */}
-          {/* The href "resume.pdf" looks for the file in the public folder */}
           <a
-            href="OwenTanKengLeng_Resume.pdf"
+            href="OwenTanKengLeng_Resume.pdf" // looks in public folder
             download="Owen_Resume.pdf"
             className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white px-5 py-2.5 rounded-full font-semibold shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 hover:-translate-y-1 transition-all duration-300"
           >

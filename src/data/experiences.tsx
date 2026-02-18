@@ -40,12 +40,23 @@ export const experiences: Experience[] = [
     end_date: "Aug 2025",
     description: [
       "Designed LLM-based evaluation pipelines to audit call transcripts against regulatory guidelines, achieving more than 90% agreement with human reviewers",
-      "Engineered 3 prompt workflows for Claude and Gemini, iterating on evaluation rubrics and negative sampling analysis",
+      "Engineered 3 prompt workflows for Claude and Gemini models, iterating on evaluation rubrics and negative sampling analysis",
       "Conducted multimodal Speech-to-Text experiments with Gemini, improving transcript quality for downstream NLP tasks",
     ],
   },
   {
     id: 4,
+    role: "Business Analyst Intern",
+    company: "Shopee",
+    start_date: "Jan 2025",
+    end_date: "Apr 2025",
+    description: [
+      "Engineered complex SQL queries for downstream data dashboards using window functions and CTEs",
+      "Created a text similarity scoring based algorithm to detect similar product names",
+    ],
+  },
+  {
+    id: 5,
     role: "Data Scientist Intern",
     company: "SATS Ltd",
     start_date: "Aug 2024",

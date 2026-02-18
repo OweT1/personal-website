@@ -7,7 +7,7 @@ export function IntroSection() {
     <section
       id="home"
       // className="flex flex-col-reverse md:flex-row items-center justify-between gap-10" // vertical alignment
-      className="flex flex-row items-center justify-between gap-15"
+      className="flex flex-row md:flex-col-reverse items-center justify-between gap-15"
     >
       <div className="flex-1 text-center md:text-left space-y-6">
         <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight">

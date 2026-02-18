@@ -44,7 +44,7 @@ export function ProjectSection() {
               <div
                 key={project.id}
                 // className="w-full shrink-0 p-8 md:p-12 flex flex-col md:flex-row gap-8 items-center" // set default to flex-row
-                className="w-full shrink-0 p-8 md:p-12 flex flex-row gap-8 items-center"
+                className="w-full shrink-0 p-8 md:p-12 flex flex-row md: flex-col gap-8 items-center"
               >
                 {/* Visual Placeholder (Left Side) */}
                 <div className="w-full md:w-1/2 aspect-video rounded-lg flex items-center justify-center">

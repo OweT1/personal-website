@@ -1,12 +1,10 @@
 import { skills } from "@/data/skills";
+import { SectionHeader } from "@/components/section-components";
 
 export function SkillSection() {
   return (
     <section id="skills">
-      <h2 className="text-3xl font-bold mb-10 text-center md:text-left flex items-center gap-3">
-        <span className="w-10 h-1 bg-orange-500 rounded-full inline-block"></span>
-        Skills
-      </h2>
+      <SectionHeader header="Skills" />
       <div className="flex flex-wrap gap-3">
         {skills.map((skill) => (
           <span

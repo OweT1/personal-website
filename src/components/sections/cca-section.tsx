@@ -1,12 +1,10 @@
 import { ccas } from "@/data/ccas";
+import { SectionHeader } from "../section-components";
 
 export function CCASection() {
   return (
     <section id="cca">
-      <h2 className="text-3xl font-bold mb-10 text-center md:text-left flex items-center gap-3">
-        <span className="w-10 h-1 bg-orange-500 rounded-full inline-block"></span>
-        Leadership Experiences / CCAs
-      </h2>
+      <SectionHeader header="Leadership Experience / CCAs" />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {ccas.map((cca) => (
           <div

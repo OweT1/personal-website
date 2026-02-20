@@ -14,11 +14,16 @@ export function ExperienceSection() {
             hover:shadow-md hover:border-orange-100 transition-all duration-300"
           >
             <div className="flex flex-row justify-between mb-4">
-              <div>
-                <h3 className="text-xl font-bold text-slate-800">{job.role}</h3>
-                <span className="text-orange-600 font-medium">
-                  {job.company}
-                </span>
+              <div className="flex flex-row justify-start">
+                <img src={job.company_logo} className="w-12.5 h-12.5 mr-4" />
+                <div className="h-12.5">
+                  <h3 className="text-xl font-bold text-slate-800">
+                    {job.role}
+                  </h3>
+                  <span className="text-orange-600 font-medium">
+                    {job.company}
+                  </span>
+                </div>
               </div>
               <div className="text-sm text-slate-400 mt-1 md:mt-0 italic">
                 {job.start_date} - {job.end_date}

@@ -1,7 +1,14 @@
-export interface Experience {
+import SATSCompanyLogo from "@/assets/SATS_Company_Logo.jpeg";
+import ShopeeCompanyLogo from "@/assets/Shopee_Company_Logo.png";
+import DBSCompanyLogo from "@/assets/DBS_Company_Logo.jpg";
+import TemasekCompanyLogo from "@/assets/Temasek_Holdings_Company_Logo.png";
+import GICCompanyLogo from "@/assets/GIC_Company_Logo.png";
+
+interface Experience {
   id: number;
   role: string;
   company: string;
+  company_logo: string;
   start_date: string;
   end_date: string;
   description: string[];
@@ -12,6 +19,7 @@ export const experiences: Experience[] = [
     id: 1,
     role: "Quantitative Strategist Intern",
     company: "GIC",
+    company_logo: GICCompanyLogo,
     start_date: "Jan 2026",
     end_date: "Present",
     description: [
@@ -23,6 +31,7 @@ export const experiences: Experience[] = [
     id: 2,
     role: "Machine Learning / Data Engineer Intern",
     company: "Temasek Holdings",
+    company_logo: TemasekCompanyLogo,
     start_date: "Aug 2025",
     end_date: "Dec 2025",
     description: [
@@ -36,6 +45,7 @@ export const experiences: Experience[] = [
     id: 3,
     role: "Data Science Intern",
     company: "DBS Bank",
+    company_logo: DBSCompanyLogo,
     start_date: "May 2025",
     end_date: "Aug 2025",
     description: [
@@ -48,6 +58,7 @@ export const experiences: Experience[] = [
     id: 4,
     role: "Business Analyst Intern",
     company: "Shopee",
+    company_logo: ShopeeCompanyLogo,
     start_date: "Jan 2025",
     end_date: "Apr 2025",
     description: [
@@ -59,6 +70,7 @@ export const experiences: Experience[] = [
     id: 5,
     role: "Data Scientist Intern",
     company: "SATS Ltd",
+    company_logo: SATSCompanyLogo,
     start_date: "Aug 2024",
     end_date: "Dec 2024",
     description: [

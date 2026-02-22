@@ -1,30 +1,94 @@
-import { skills } from "@/data/skills";
+import { useState } from "react";
+import { Skill, skills } from "@/data/skills";
 import { SectionHeader } from "@/components/section-components";
+
+function SkillTab({ id, skillCategory, skillNames }: Skill) {
+  const [categoryIsOpen, setCategoryIsOpen] = useState(false);
+
+  const toggleCategory = () => {
+    setCategoryIsOpen((openCat) => !openCat);
+  };
+
+  return (
+    <div
+      key={id}
+      className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"
+    >
+      {/* Clickable Header */}
+      <button
+        onClick={() => toggleCategory()}
+        className="w-full px-6 py-4 flex items-center justify-between 
+        hover:bg-slate-50 hover:cursor-pointer transition-colors focus:outline-none"
+      >
+        <span
+          className={`font-semibold transition-colors ${categoryIsOpen ? "text-orange-500" : "text-slate-700"}`}
+        >
+          {skillCategory}
+        </span>
+
+        {/* Chevron Icon that rotates when open */}
+        <svg
+          className={`w-5 h-5 text-slate-500 transition-transform duration-300 ${
+            categoryIsOpen ? "rotate-180" : "rotate-0"
+          }`}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
+        </svg>
+      </button>
+
+      {/* Expandable Content - Uses CSS Grid for smooth auto-height animation */}
+      <div
+        className={`grid transition-all duration-300 ease-in-out ${
+          categoryIsOpen
+            ? "grid-rows-[1fr] opacity-100"
+            : "grid-rows-[0fr] opacity-0"
+        }`}
+      >
+        {/* overflow-hidden is required here for the grid animation to work */}
+        <div className="overflow-hidden">
+          <div className="px-6 pb-5 pt-2 border-t border-slate-100 flex flex-col gap-2">
+            {skillNames.map((skillName, index) => (
+              <div key={index}>
+                {/* Render each subcategory as newlines */}
+                <h4 className="text-sm font-semibold text-slate-500 mb-2">
+                  {skillName.skillSubCategory}:
+                </h4>
+                {/* Render the individual skills as small pills */}
+                <div className="flex flex-wrap gap-2">
+                  {skillName.skillSubNames.map((skillSub, subIndex) => (
+                    <span
+                      key={subIndex}
+                      className="px-4 py-1.5 bg-slate-100 text-slate-600 rounded-full text-sm font-medium hover:bg-orange-500 hover:text-white transition-colors cursor-default"
+                    >
+                      {skillSub}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function SkillSection() {
   return (
     <section id="skills">
       <SectionHeader header="Technical Skills" />
-      <div className="flex flex-wrap gap-3">
-        {skills.map((skill) => (
-          <div
-            key={skill.id}
-            className="relative group transition-all duration-300 hover:-translate-y-1"
-          >
-            {/* Tooltip Bubble */}
-            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-10 pointer-events-none">
-              <div className="bg-slate-800 text-white text-xs px-3 py-2 rounded-lg shadow-lg whitespace-nowrap relative">
-                {skill.skillNames.join(", ")}
-                <div className="absolute top-full left-1/2 -translate-x-1/2 border- border-transparent border-t-slate-800"></div>
-              </div>
-            </div>
-
-            {/* 3. Your original span, updated to use "group-hover:" */}
-            <span className="block px-5 py-2 bg-white text-slate-700 rounded-full shadow-sm border border-slate-200 font-medium group-hover:bg-orange-500 group-hover:text-white group-hover:border-orange-500 group-hover:shadow-lg transition-all duration-300 cursor-default">
-              {skill.skillCategory}
-            </span>
-          </div>
-        ))}
+      <div className="flex flex-col gap-3 w-full">
+        {skills.map((skill) => {
+          return <SkillTab {...skill} />;
+        })}
       </div>
     </section>
   );

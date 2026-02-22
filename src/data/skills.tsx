@@ -1,7 +1,12 @@
-interface Skill {
+export interface SkillSubCategory {
+  skillSubCategory: string;
+  skillSubNames: string[];
+}
+
+export interface Skill {
   id: number;
   skillCategory: string;
-  skillNames: string[];
+  skillNames: SkillSubCategory[];
 }
 
 export const skills: Skill[] = [
@@ -9,65 +14,94 @@ export const skills: Skill[] = [
     id: 1,
     skillCategory: "Programming Languages",
     skillNames: [
-      "Python",
-      "SQL",
-      "Cypher",
-      "Java",
-      "JavaScript",
-      "TypeScript",
-      "CSS",
-      "Go",
-      "R",
+      {
+        skillSubCategory: "Programming",
+        skillSubNames: [
+          "Python",
+          "Java",
+          "JavaScript",
+          "TypeScript",
+          "CSS",
+          "Go",
+          "R",
+        ],
+      },
+      {
+        skillSubCategory: "Scripting",
+        skillSubNames: ["SQL", "Cypher"],
+      },
     ],
   },
   {
     id: 2,
-    skillCategory: "ML & Optimisation Libraries / Frameworks",
-    skillNames: ["Scikit-learn", "XGBoost", "PyTorch", "Pymoo"],
+    skillCategory: "Libraries / Frameworks",
+    skillNames: [
+      {
+        skillSubCategory: "Machine Learning & Optimisation",
+        skillSubNames: [
+          "Scikit-learn",
+          "XGBoost",
+          "PyTorch",
+          "Tensorflow",
+          "Keras",
+          "Pymoo",
+        ],
+      },
+      {
+        skillSubCategory: "Large Language Models (LLM)",
+        skillSubNames: [
+          "Transformers",
+          "HuggingFace",
+          "OpenRouter",
+          "LiteLLM",
+          "LangChain",
+          "LangGraph",
+          "DeepEval",
+        ],
+      },
+      {
+        skillSubCategory: "Data Visualisation",
+        skillSubNames: ["Matplotlib", "Seaborn"],
+      },
+      {
+        skillSubCategory: "Frontend",
+        skillSubNames: ["React", "Vite", "Streamlit", "Gradio"],
+      },
+    ],
   },
   {
     id: 3,
-    skillCategory: "LLM Libraries / Frameworks",
+    skillCategory: "Data Engineering",
     skillNames: [
-      "Transformers",
-      "HuggingFace",
-      "OpenRouter",
-      "LiteLLM",
-      "LangChain",
-      "LangGraph",
-      "DeepEval",
+      {
+        skillSubCategory: "Databases",
+        skillSubNames: [
+          "Postgres",
+          "SQLAlchemy",
+          "Alembic",
+          "MongoDB",
+          "Neo4j",
+          "Graphiti",
+        ],
+      },
+      {
+        skillSubCategory: "Data Manipulation",
+        skillSubNames: ["NumPy", "Pandas", "PySpark", "GeoPandas"],
+      },
     ],
   },
   {
     id: 4,
-    skillCategory: "Databases",
-    skillNames: [
-      "Postgres",
-      "SQLAlchemy",
-      "Alembic",
-      "MongoDB",
-      "Neo4j",
-      "Graphiti",
-    ],
-  },
-  {
-    id: 5,
-    skillCategory: "Data Manipulation & Data Engineering",
-    skillNames: ["NumPy", "Pandas", "PySpark", "GeoPandas"],
-  },
-  {
-    id: 6,
-    skillCategory: "Frontend Libraries / Frameworks",
-    skillNames: ["React", "Streamlit", "Gradio"],
-  },
-  {
-    id: 7,
-    skillCategory: "Data Visualisation Libraries / Frameworks",
-    skillNames: ["Matplotlib", "Seaborn"],
-  },
-  {
-    id: 8,
     skillCategory: "Version Control & Containerisation",
-    skillNames: ["Git", "Docker", "Kubernetes"],
+    skillNames: [
+      {
+        skillSubCategory: "Version Control",
+        skillSubNames: ["Git"],
+      },
+      {
+        skillSubCategory: "Containerisation",
+        skillSubNames: ["Docker", "Kubernetes"],
+      },
+    ],
   },
 ];

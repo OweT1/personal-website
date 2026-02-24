@@ -27,7 +27,7 @@ export const skills: Skill[] = [
         ],
       },
       {
-        skillSubCategory: "Scripting",
+        skillSubCategory: "Database",
         skillSubNames: ["SQL", "Cypher"],
       },
     ],
@@ -54,9 +54,9 @@ export const skills: Skill[] = [
           "HuggingFace",
           "OpenRouter",
           "LiteLLM",
+          "Ollama",
           "LangChain",
           "LangGraph",
-          "DeepEval",
         ],
       },
       {
@@ -65,7 +65,11 @@ export const skills: Skill[] = [
       },
       {
         skillSubCategory: "Frontend",
-        skillSubNames: ["React", "Vite", "Streamlit", "Gradio"],
+        skillSubNames: ["Streamlit", "Gradio", "React", "Vite"],
+      },
+      {
+        skillSubCategory: "Testing",
+        skillSubNames: ["Pytest", "DeepEval"],
       },
     ],
   },
@@ -92,7 +96,7 @@ export const skills: Skill[] = [
   },
   {
     id: 4,
-    skillCategory: "Version Control & Containerisation",
+    skillCategory: "Software Engineering",
     skillNames: [
       {
         skillSubCategory: "Version Control",

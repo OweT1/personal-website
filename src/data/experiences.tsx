@@ -21,10 +21,12 @@ export const experiences: Experience[] = [
     company: "GIC",
     company_logo: GICCompanyLogo,
     start_date: "Jan 2026",
-    end_date: "Present",
+    end_date: "May 2026",
     description: [
-      "Architectured and optimised a high-fidelity data extraction pipeline converting PDFs to structured Markdown with extraction accuracy of more than 90% and reduced overall pipeline execution runtime by 50%",
-      "Engineered 2 features for Linear Regression, Random Forest and XGBoost models to predict rent price of real estate assets in Korea",
+      "Architected a high-fidelity PDF-to-Markdown extraction pipeline achieving >90% extraction accuracy and cutting end-to-end pipeline runtime by 50%, enabling downstream Q&A use cases for the investment team",
+      "Automated manual labelling of investment documents using a LangGraph multi-agent workflow, achieving >90% classification accuracy and eliminating hours of analyst labelling effort",
+      "Evaluated RAG performance on the department's internal LLM chatbot using LLM-as-a-judge methodology (Atomic Facts + Context Retrieval), surfacing actionable gaps in retrieval quality",
+      "Contributed to department's internal Analytics Library, delivering features adopted across 10 team members; supported Databricks migration to consolidate team workflows",
     ],
   },
   {
@@ -35,10 +37,10 @@ export const experiences: Experience[] = [
     start_date: "Aug 2025",
     end_date: "Dec 2025",
     description: [
-      "Designed and deployed 2 production LLM tools: a slide-generation tool and an investment tool that retrieves structured financial metrics (such as EV, EBITDA, P/E) from Snowflake via dynamic SQL querying",
-      "Reduced metadata extraction latency by more than 50% (20s to less than 10s) through prompt decomposition and asynchronous processing",
-      "Benchmarked semantic retrieval solutions (OpenAI File Search, Snowflake Cortex, Azure AI Search) across latency, document retrieval recall (Recall@5), and cost for production use case",
-      "Built a Neo4j-based knowledge graph POC to model entity relationships and enable multi-hop document retrieval",
+      "Designed and shipped 2 production LLM tools serving ~1,000 internal users: a slide-generation tool (~700 users) and a financial metrics retrieval tool (~300 users) querying EV, EBITDA, and P/E ratios from Snowflake via dynamic SQL generation",
+      "Reduced metadata extraction latency by >50% (20s → <10s) through prompt decomposition and async processing, improving responsiveness for production workloads",
+      "Benchmarked 3 semantic retrieval systems (OpenAI File Search, Snowflake Cortex, Azure AI Search) across latency, Recall@5, and cost, producing a decision framework for production adoption",
+      "Built a Neo4j knowledge graph POC to model entity relationships and enable multi-hop document retrieval, extending the retrieval system beyond flat vector search",
     ],
   },
   {
@@ -49,9 +51,9 @@ export const experiences: Experience[] = [
     start_date: "May 2025",
     end_date: "Aug 2025",
     description: [
-      "Designed LLM-based evaluation pipelines to audit call transcripts against regulatory guidelines, achieving more than 90% agreement with human reviewers",
-      "Engineered 3 prompt workflows for Claude and Gemini models, iterating on evaluation rubrics and negative sampling analysis",
-      "Conducted multimodal Speech-to-Text experiments with Gemini, improving transcript quality for downstream NLP tasks",
+      "Built LLM-based evaluation pipelines to audit call centre transcripts against regulatory compliance guidelines at scale (thousands of transcripts), achieving >90% agreement with human reviewers and reducing manual audit burden",
+      "Engineered 3 structured prompt workflows for Claude and Gemini, iterating on evaluation rubrics and negative sampling to improve recall on non-compliant transcript detection",
+      "Conducted multimodal Speech-to-Text experiments with Gemini to improve upstream transcript quality, reducing transcription error rate for downstream NLP evaluation pipelines",
     ],
   },
   {
@@ -74,9 +76,9 @@ export const experiences: Experience[] = [
     start_date: "Aug 2024",
     end_date: "Dec 2024",
     description: [
-      "Fine-tuned a DeBERTa-based text classification model to categorise text into 10 classes, achieving 85% accuracy",
-      "Deployed an end-to-end workflow and implemented Genetic Algorithm in Python to automate optimisation of baggage allocation under 10+ hard and soft constraints, reducing planning time by more than 50%",
-      "Built Microsoft Azure based document digitalisation pipelines (Databricks, Blob Storage, Logic Apps), reducing paper usage to 0% and operational costs by 20%",
+      "Fine-tuned a DeBERTa-based text classification model to categorise operational text across 10 classes, achieving 85% accuracy on an imbalanced production dataset",
+      "Engineered an end-to-end baggage allocation optimisation system using Genetic Algorithms in Python, handling 10+ hard and soft constraints across hundreds of bags per flight and reducing manual planning time by >50%",
+      "Built Azure-based document digitalisation pipelines (Databricks, Blob Storage, Logic Apps), eliminating paper-based processes entirely and reducing operational costs by 20%",
     ],
   },
 ];

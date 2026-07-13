@@ -15,4 +15,5 @@ export default defineConfig({
     "process.env": {},
   },
   base: "/personal-website/",
+  assetsInclude: ["**/*.md"]
 });

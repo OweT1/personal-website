@@ -5,17 +5,20 @@ import { moduleReviewsData } from "@/data/reviews-data";
 
 export function ModulePage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [hasFocus, setHasFocus] = useState(false);
   const [openSections, setOpenSections] = useState(new Set<string>()); // Set of yearsemester keys that are open
   const [openModules, setOpenModules] = useState(new Set<string>()); // Set of module ids that are open
 
-  // Filter modules based on search term (module code or name)
-  const filteredModules = moduleReviewsData.filter((module) => {
-    const term = searchTerm.toLowerCase();
-    return (
-      module.moduleCode.toLowerCase().includes(term) ||
-      module.moduleName.toLowerCase().includes(term)
-    );
-  });
+  // Filter modules based on search term (module code or name) and sort by module code
+  const filteredModules = moduleReviewsData
+    .filter((module) => {
+      const term = searchTerm.toLowerCase();
+      return (
+        module.moduleCode.toLowerCase().includes(term) ||
+        module.moduleName.toLowerCase().includes(term)
+      );
+    })
+    .sort((a, b) => a.moduleCode.localeCompare(b.moduleCode));
 
   // Group filtered modules by yearSemester
   const grouped = filteredModules.reduce(
@@ -60,7 +63,7 @@ export function ModulePage() {
     <div className="max-w-4xl mx-auto px-6 pt-20">
       <button
         onClick={() => (window.location.href = "/")}
-        className="mb-8 px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 hover:cursor-pointer transition"
+        className="mb-8 px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-full font-semibold shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 hover:-translate-y-1 hover:cursor-pointer transition transition-all duration-300"
       >
         ← Back to Home
       </button>
@@ -68,14 +71,50 @@ export function ModulePage() {
       <h1 className="text-4xl font-bold mb-6">NUS Module Reviews</h1>
 
       {/* Search bar */}
-      <div className="mb-6">
-        <input
-          type="text"
-          placeholder="Search by module code or name..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-4 py-2 border border-black-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-        />
+      <div className="mb-6 relative">
+        <div className="flex justify-center items-center">
+          {/* Search input bar */}
+          <input
+            type="text" // type="search" gives a native HTML clear, but is not customisable
+            placeholder="🔍 Search by module code or name..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onFocus={() => setHasFocus(true)}
+            onBlur={() => setHasFocus(false)}
+            className="w-full px-4 py-2 border border-black-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+          />
+          {/* Clear Search Results button */}
+          {searchTerm !== "" && (
+            <button
+              onClick={() => setSearchTerm("")}
+              className="absolute right-1 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 hover:cursor-pointer transition-colors p-1 rounded hover:bg-gray-100"
+            >
+              ×
+            </button>
+          )}
+        </div>
+        {/* Search Results Window */}
+        {hasFocus && searchTerm !== "" && filteredModules.length > 0 && (
+          <div
+            className="absolute z-10 w-full mt-1 border border-gray-300 rounded bg-white shadow-md"
+            onMouseDown={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+          >
+            {/* Search Results */}
+            {filteredModules.slice(0, 5).map((module) => (
+              <div
+                key={module.id}
+                onClick={() => setSearchTerm(module.moduleCode)}
+                className="w-full px-4 py-2 text-left hover:bg-gray-100 cursor-pointer"
+              >
+                <div className="font-semibold">{module.moduleCode}</div>
+                <div className="text-sm text-gray-500">{module.moduleName}</div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Display grouped modules */}
@@ -113,7 +152,7 @@ export function ModulePage() {
                     {modulesInYear.map((module) => (
                       <div
                         key={module.id}
-                        className="mb-2 mt-2 border rounded overflow-hidden shadow-sm bg-white w-9/10 mx-auto"
+                        className="mb-2 mt-2 border border-gray-300 rounded overflow-hidden shadow-sm bg-white w-9/10 mx-auto"
                       >
                         <button
                           onClick={() => toggleModule(module.id)}

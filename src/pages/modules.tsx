@@ -6,6 +6,7 @@ import { moduleReviewsData } from "@/data/reviews-data";
 export function ModulePage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [openSections, setOpenSections] = useState(new Set<string>()); // Set of yearsemester keys that are open
+  const [openModules, setOpenModules] = useState(new Set<string>()); // Set of module ids that are open
 
   // Filter modules based on search term (module code or name)
   const filteredModules = moduleReviewsData.filter((module) => {
@@ -43,6 +44,18 @@ export function ModulePage() {
     });
   };
 
+  const toggleModule = (id: string) => {
+    setOpenModules((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
+  };
+
   return (
     <div className="max-w-4xl mx-auto px-6 pt-20">
       <button
@@ -61,7 +74,7 @@ export function ModulePage() {
           placeholder="Search by module code or name..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-2 border border-black-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
         />
       </div>
 
@@ -76,11 +89,10 @@ export function ModulePage() {
             const [year, semester] = ys.split("s");
             const displayName = `Year ${year.charAt(year.length - 1)} Semester ${semester}`;
             const isOpen = openSections.has(ys);
-            console.log(modulesInYear);
             return (
               <div
                 key={ys}
-                className="mb-6 border rounded-lg overflow-hidden shadow"
+                className="mb-6 border border-1.5 rounded-lg overflow-hidden shadow bg-white"
               >
                 {/* Header for collapsible section */}
                 <div
@@ -99,15 +111,34 @@ export function ModulePage() {
                 {!isOpen ? null : (
                   <div className="divide-y divide-gray-200">
                     {modulesInYear.map((module) => (
-                      <div key={module.id} className="p-4 hover:bg-gray-50">
-                        <h2 className="text-lg font-semibold mb-2">
-                          {module.moduleCode} {module.moduleName}
-                        </h2>
-                        <div className="prose prose-sm max-w-none">
-                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                            {module.content}
-                          </ReactMarkdown>
-                        </div>
+                      <div
+                        key={module.id}
+                        className="mb-2 mt-2 border rounded overflow-hidden shadow-sm bg-white w-9/10 mx-auto"
+                      >
+                        <button
+                          onClick={() => toggleModule(module.id)}
+                          className="w-full flex items-center justify-between px-4 py-3 text-left bg-gray-50 hover:bg-gray-100 transition focus:outline-none focus:ring-2 focus:ring-blue-500 hover:cursor-pointer"
+                        >
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-lg">
+                              {module.moduleCode} {module.moduleName}
+                            </h3>
+                          </div>
+                          <span
+                            className={`transition-transform duration-200 ${openModules.has(module.id) ? "rotate-180" : ""}`}
+                          >
+                            ▾
+                          </span>
+                        </button>
+                        {openModules.has(module.id) && (
+                          <div className="border-t border-gray-200 bg-white">
+                            <div className="p-4 prose prose-sm max-w-none">
+                              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                {module.content}
+                              </ReactMarkdown>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>

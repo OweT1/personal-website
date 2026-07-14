@@ -1,9 +1,9 @@
-import { IntroSection } from "@/components/sections/intro-section";
-import { ExperienceSection } from "@/components/sections/experience-section";
-import { ProjectSection } from "@/components/sections/project-section";
-import { CCASection } from "@/components/sections/cca-section";
-import { SkillSection } from "@/components/sections/skill-section";
-import { FooterSection } from "@/components/sections/footer-section";
+import { IntroSection } from "@/components/home/intro-section";
+import { ExperienceSection } from "@/components/home/experience-section";
+import { ProjectSection } from "@/components/home/project-section";
+import { CCASection } from "@/components/home/cca-section";
+import { SkillSection } from "@/components/home/skill-section";
+import { FooterSection } from "@/components/home/footer-section";
 
 export function HomePage() {
   return (

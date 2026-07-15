@@ -229,7 +229,7 @@ export function ModulePage() {
                         </button>
                         {openModules.has(module.id) && (
                           <div className="border-t border-gray-200 bg-white">
-                            <div className="p-4 prose prose-sm max-w-none">
+                            <div className="p-4 prose prose-sm max-w-none markdown">
                               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                 {module.content}
                               </ReactMarkdown>

@@ -1,6 +1,8 @@
 import { useState, useMemo, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+
+import { BASE_URL } from "@/constants";
 import { moduleReviewsData } from "@/data/reviews-data";
 
 export function ModulePage() {
@@ -94,7 +96,7 @@ export function ModulePage() {
   return (
     <div className="max-w-4xl mx-auto px-6 pt-20">
       <button
-        onClick={() => (window.location.href = "/")}
+        onClick={() => (window.location.href = BASE_URL)}
         className="mb-8 px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-full font-semibold shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 hover:-translate-y-1 hover:cursor-pointer transition transition-all duration-300"
       >
         ← Back to Home

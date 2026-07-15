@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { moduleReviewsData } from "@/data/reviews-data";
@@ -8,17 +8,23 @@ export function ModulePage() {
   const [hasFocus, setHasFocus] = useState(false);
   const [openSections, setOpenSections] = useState(new Set<string>()); // Set of yearsemester keys that are open
   const [openModules, setOpenModules] = useState(new Set<string>()); // Set of module ids that are open
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
-  // Filter modules based on search term (module code or name) and sort by module code
-  const filteredModules = moduleReviewsData
-    .filter((module) => {
-      const term = searchTerm.toLowerCase();
-      return (
-        module.moduleCode.toLowerCase().includes(term) ||
-        module.moduleName.toLowerCase().includes(term)
-      );
-    })
-    .sort((a, b) => a.moduleCode.localeCompare(b.moduleCode));
+  const getFilteredModules = (term: string) => {
+    const termLower = term.toLowerCase();
+    return moduleReviewsData
+      .filter(
+        (module) =>
+          module.moduleCode.toLowerCase().includes(termLower) ||
+          module.moduleName.toLowerCase().includes(termLower),
+      )
+      .sort((a, b) => a.moduleCode.localeCompare(b.moduleCode));
+  };
+
+  const filteredModules = useMemo(
+    () => getFilteredModules(searchTerm),
+    [searchTerm],
+  );
 
   // Group filtered modules by yearSemester
   const grouped = filteredModules.reduce(
@@ -47,6 +53,16 @@ export function ModulePage() {
     });
   };
 
+  const onClickModule = (moduleCode: string) => {
+    setSearchTerm(moduleCode);
+    setHasFocus(false);
+  };
+
+  const onChangeSearchTerm = (target: string) => {
+    setSearchTerm(target);
+    setHasFocus(true);
+  };
+
   const toggleModule = (id: string) => {
     setOpenModules((prev) => {
       const newSet = new Set(prev);
@@ -58,6 +74,22 @@ export function ModulePage() {
       return newSet;
     });
   };
+
+  // Update highlighted index when filteredModules changes
+  useEffect(() => {
+    if (filteredModules.length > 0) {
+      setHighlightedIndex(0);
+    } else {
+      setHighlightedIndex(-1);
+    }
+  }, [filteredModules]);
+
+  // Reset highlighted index when search results window closes
+  useEffect(() => {
+    if (!hasFocus) {
+      setHighlightedIndex(-1);
+    }
+  }, [hasFocus]);
 
   return (
     <div className="max-w-4xl mx-auto px-6 pt-20">
@@ -78,9 +110,33 @@ export function ModulePage() {
             type="text" // type="search" gives a native HTML clear, but is not customisable
             placeholder="🔍 Search by module code or name..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => onChangeSearchTerm(e.target.value)}
             onFocus={() => setHasFocus(true)}
             onBlur={() => setHasFocus(false)}
+            onKeyDown={(e) => {
+              if (!hasFocus || filteredModules.length === 0) return;
+              if (e.key === "ArrowDown") {
+                e.preventDefault();
+                // Limit to first 5 results (indices 0-4) or fewer if less than 5 results
+                const maxIndex = Math.min(4, filteredModules.length - 1);
+                setHighlightedIndex((prev) => Math.min(prev + 1, maxIndex));
+              } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                setHighlightedIndex((prev) => Math.max(prev - 1, 0));
+              } else if (e.key === "Enter") {
+                e.preventDefault();
+                if (
+                  highlightedIndex >= 0 &&
+                  highlightedIndex < filteredModules.length
+                ) {
+                  onClickModule(filteredModules[highlightedIndex].moduleCode);
+                }
+              } else if (e.key === "Escape") {
+                e.preventDefault();
+                setHasFocus(false);
+                setHighlightedIndex(-1);
+              }
+            }}
             className="w-full px-4 py-2 border border-black-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           />
           {/* Clear Search Results button */}
@@ -103,11 +159,13 @@ export function ModulePage() {
             }}
           >
             {/* Search Results */}
-            {filteredModules.slice(0, 5).map((module) => (
+            {filteredModules.slice(0, 5).map((module, index) => (
               <div
                 key={module.id}
-                onClick={() => setSearchTerm(module.moduleCode)}
-                className="w-full px-4 py-2 text-left hover:bg-gray-100 cursor-pointer"
+                onClick={() => onClickModule(module.moduleCode)}
+                className={`w-full px-4 py-2 text-left hover:bg-gray-100 cursor-pointer ${
+                  index === highlightedIndex ? "bg-blue-50" : ""
+                }`}
               >
                 <div className="font-semibold">{module.moduleCode}</div>
                 <div className="text-sm text-gray-500">{module.moduleName}</div>

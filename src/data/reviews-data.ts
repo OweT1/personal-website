@@ -2,7 +2,7 @@
 const modules = import.meta.glob("/src/data/reviews/*/*.md", {
   eager: true,
   query: "?raw",
-});
+}) as Record<string, { default: string }>;
 
 export type ModuleReviewData = {
   id: string;
@@ -35,6 +35,6 @@ export const moduleReviewsData: ModuleReviewData[] = Object.entries(
     moduleCode,
     moduleName,
     yearSemester,
-    content: content.default as string,
+    content: content.default,
   };
 });

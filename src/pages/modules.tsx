@@ -100,7 +100,14 @@ export function ModulePage() {
         ← Back to Home
       </button>
 
-      <h1 className="text-4xl font-bold mb-6">NUS Module Reviews</h1>
+      <h1 className="text-4xl font-bold mb-6">🦁 NUS Module Reviews</h1>
+      {/* Top body */}
+      <div className="mb-2">
+        <div>
+          These are my honest reviews of the (main) modules I took at NUS!
+        </div>
+        <div>Happy reading! 🙂</div>
+      </div>
 
       {/* Search bar */}
       <div className="mb-6 relative">

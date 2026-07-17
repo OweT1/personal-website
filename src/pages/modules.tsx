@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-import { BASE_URL } from "@/constants";
+import { BASE_URL } from "@/constants/paths";
 import { moduleReviewsData } from "@/data/reviews-data";
 
 export function ModulePage() {

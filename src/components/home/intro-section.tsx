@@ -1,7 +1,9 @@
 import { FaGithub, FaLinkedin, FaFilePdf } from "react-icons/fa";
 import { IoIosMail } from "react-icons/io";
-import profilePic from "@/assets/Owen_Picture.jpg";
 import { useNavigate } from "react-router-dom";
+
+import profilePic from "@/assets/Owen_Picture.jpg";
+import { buttonVariants } from "@/constants/themes";
 
 export function IntroSection() {
   const navigate = useNavigate();
@@ -33,7 +35,7 @@ export function IntroSection() {
             href="https://github.com/OweT1"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-slate-600 hover:text-orange-600 hover:-translate-y-1 transition-all duration-300"
+            className={buttonVariants.miniHoverOrange}
           >
             <FaGithub size={28} />
           </a>
@@ -43,7 +45,7 @@ export function IntroSection() {
             href="https://linkedin.com/in/owentankengleng"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-slate-600 hover:text-blue-600 hover:-translate-y-1 transition-all duration-300"
+            className={buttonVariants.miniHoverBlue}
           >
             <FaLinkedin size={28} />
           </a>
@@ -53,7 +55,7 @@ export function IntroSection() {
             href="mailto:owentan2021@gmail.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-slate-600 hover:text-blue-600 hover:-translate-y-1 transition-all duration-300"
+            className={buttonVariants.miniHoverOrange}
           >
             <IoIosMail size={28} />
           </a>
@@ -62,17 +64,26 @@ export function IntroSection() {
           <a
             href="OwenTanKengLeng_Resume.pdf" // looks in public folder
             download="Owen_Resume.pdf"
-            className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white px-5 py-2.5 rounded-full font-semibold shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 hover:-translate-y-1 transition-all duration-300"
+            className={`flex items-center gap-2 ${buttonVariants.gradualRedOrange}`}
           >
             <FaFilePdf size={18} />
             Resume
           </a>
-
+        </div>
+        {/* Personal Website Sections*/}
+        <div className="flex items-center justify-center md:justify-start gap-5 pt-2">
           <button
             onClick={() => navigate("/modules")}
-            className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-5 py-2.5 rounded-full font-semibold shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 hover:-translate-y-1 transition-all hover: cursor-pointer duration-300"
+            className={buttonVariants.gradualRedBlue}
           >
-            Module Reviews
+            🦁 Module Reviews
+          </button>
+
+          <button
+            onClick={() => navigate("/blog")}
+            className={buttonVariants.gradualRedBlue}
+          >
+            ✍️ Personal Blog
           </button>
         </div>
       </div>

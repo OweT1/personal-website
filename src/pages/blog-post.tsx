@@ -6,6 +6,7 @@ import remarkGfm from "remark-gfm";
 import { FaTwitter, FaLinkedin, FaEnvelope, FaLink } from "react-icons/fa";
 import { BlogButton } from "@/components/generalComponents/buttons";
 import { useState } from "react";
+import type { ImgHTMLAttributes } from "react";
 
 // Calculate reading time based on average reading speed of 200 words per minute
 function getReadingTime(content: string): number {
@@ -45,6 +46,28 @@ export function BlogPostPage() {
     )}`,
   };
 
+  const customComponents = {
+    img: ({ src, alt, ...props }: ImgHTMLAttributes<HTMLImageElement>) => {
+      // If src is null or undefined, return null to avoid rendering an invalid image
+      if (src == null) {
+        return null;
+      }
+      // Modify relative paths if needed, add lazy loading, or use Next.js Image
+      const isLocal = src.startsWith("/");
+      const baseUrl = import.meta.env.BASE_URL;
+
+      return (
+        <img
+          src={isLocal ? `${baseUrl}${src}` : src}
+          alt={alt ?? ""}
+          loading="lazy"
+          style={{ maxWidth: "100%", height: "auto", borderRadius: "8px" }}
+          {...props}
+        />
+      );
+    },
+  };
+
   return (
     <article className="prose lg:prose-xl mx-auto py-12 px-6">
       {/* Blog top part */}
@@ -68,7 +91,10 @@ export function BlogPostPage() {
 
       {/* Article body */}
       <section className="mb-10 prose-dark">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          components={customComponents}
+        >
           {post.content}
         </ReactMarkdown>
       </section>

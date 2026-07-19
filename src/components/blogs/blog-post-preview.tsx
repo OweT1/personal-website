@@ -6,6 +6,7 @@ function getPlainTextPreview(content: string, wordsCount: number = 30): string {
   let plain = content
     .replace(/#{1,6}\s*/g, "") // remove heading symbols
     .replace(/[*_~`]/g, "") // remove emphasis markers
+    .replace(/!\[[^\]]*\]\([^\)]+\)/g, "") // remove images entirely
     .replace(/\[([^\]]+)\]\([^\)]+\)/g, "$1") // remove links, keep text
     .replace(/[\n\r]+/g, " "); // replace newlines with space
   const words = plain.trim().split(/\s+/);

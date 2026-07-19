@@ -1,12 +1,10 @@
 ---
-title: My First Blog Post
-date: 2024-01-15
+title: My First Blog Post!
+date: 2026-07-19
 ---
 
-This is my first blog post. Welcome to my blog!
+Welcome to my blog!
 
-Here I will share my thoughts on various topics.
+I plan to share things that may be useful for some, and it generally is just a place for me to journal my thoughts as I try to build stuff.
 
-## Introduction
-
-Hello world! This is the start of my journey.
+Keep an eye out for upcoming blogs!

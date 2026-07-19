@@ -1,8 +1,8 @@
-import SATSCompanyLogo from "@/assets/SATS_Company_Logo.jpeg";
-import ShopeeCompanyLogo from "@/assets/Shopee_Company_Logo.png";
-import DBSCompanyLogo from "@/assets/DBS_Company_Logo.jpg";
-import TemasekCompanyLogo from "@/assets/Temasek_Holdings_Company_Logo.png";
-import GICCompanyLogo from "@/assets/GIC_Company_Logo.png";
+import SATSCompanyLogo from "@/assets/companies/SATS_Company_Logo.jpeg";
+import ShopeeCompanyLogo from "@/assets/companies/Shopee_Company_Logo.png";
+import DBSCompanyLogo from "@/assets/companies/DBS_Company_Logo.jpg";
+import TemasekCompanyLogo from "@/assets/companies/Temasek_Holdings_Company_Logo.png";
+import GICCompanyLogo from "@/assets/companies/GIC_Company_Logo.png";
 
 interface Experience {
   id: number;

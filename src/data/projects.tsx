@@ -1,7 +1,7 @@
-import JobFinder from "@/assets/Job_Finder.png";
-import Chatbot from "@/assets/Chatbot.png";
-import PersonalWebsite from "@/assets/Personal_Website.png";
-import ResumeEvaluator from "@/assets/Resume_Evaluator.png";
+import JobFinder from "@/assets/projects/Job_Finder.png";
+import Chatbot from "@/assets/projects/Chatbot.png";
+import PersonalWebsite from "@/assets/projects/Personal_Website.png";
+import ResumeEvaluator from "@/assets/projects/Resume_Evaluator.png";
 
 interface Attribution {
   href: string;

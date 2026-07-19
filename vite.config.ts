@@ -14,6 +14,6 @@ export default defineConfig({
   define: {
     "process.env": {},
   },
-  base: "/personal-website/",
-  assetsInclude: ["**/*.md"]
+  base: "/personal-website",
+  assetsInclude: ["**/*.md"],
 });

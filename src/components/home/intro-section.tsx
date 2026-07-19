@@ -3,6 +3,7 @@ import { IoIosMail } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 
 import profilePic from "@/assets/Owen_Picture.jpg";
+import { BLOG_URL, MODULE_URL } from "@/constants/paths";
 import { buttonVariants } from "@/constants/themes";
 
 export function IntroSection() {
@@ -73,14 +74,14 @@ export function IntroSection() {
         {/* Personal Website Sections*/}
         <div className="flex items-center justify-center md:justify-start gap-5 pt-2">
           <button
-            onClick={() => navigate("/modules")}
+            onClick={() => navigate(MODULE_URL)}
             className={buttonVariants.gradualRedBlue}
           >
             🦁 Module Reviews
           </button>
 
           <button
-            onClick={() => navigate("/blog")}
+            onClick={() => navigate(BLOG_URL)}
             className={buttonVariants.gradualRedBlue}
           >
             ✍️ Personal Blog

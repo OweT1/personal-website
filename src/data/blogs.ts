@@ -31,10 +31,10 @@ export function getBlogPosts(): BlogPost[] {
     const frontmatterMatch = raw.match(/^---\n([\s\S]*?)\n---\n/);
     if (frontmatterMatch) {
       const frontmatter = frontmatterMatch[1];
-      const titleMatch = frontmatter.match(/title:\s*"([^"]*)"/);
-      if (titleMatch) title = titleMatch[1];
-      const dateMatch = frontmatter.match(/date:\s*"([^"]*)"/);
-      if (dateMatch) date = dateMatch[1];
+      const titleMatch = frontmatter.match(/title:\s*"([^"]*)"|title:\s*([^\n]+)/);
+      if (titleMatch) title = (titleMatch[1] || titleMatch[2]).trim();
+      const dateMatch = frontmatter.match(/date:\s*"([^"]*)"|date:\s*([^\n]+)/);
+      if (dateMatch) date = (dateMatch[1] || dateMatch[2]).trim();
       // Remove frontmatter from content
       contentBody = raw.replace(/^---\n[\s\S]*?\n---\n/, "");
     }

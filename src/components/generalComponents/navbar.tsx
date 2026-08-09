@@ -28,7 +28,7 @@ export function NavBar() {
           onClick={() => navigate("/")}
           className="font-bold text-slate-900 tracking-tight hover:text-red-600 transition-colors cursor-pointer"
         >
-          Owen Tan
+          Owen
         </button>
 
         <div className="flex items-center gap-6">

@@ -21,9 +21,9 @@ export function IntroSection() {
           Owen Tan Keng Leng
         </h1>
         <p className="text-lg md:text-xl text-slate-500 leading-relaxed max-w-lg mx-auto md:mx-0">
-          Data scientist and quantitative strategist with hands-on industry
-          experience at GIC, Temasek, and DBS. I build scalable, data-driven
-          systems from LLM pipelines to optimisation tools.
+          Data and Machine Learning Engineer with hands-on industry experience
+          at GIC, Temasek, and DBS. I build scalable, data-driven systems from
+          LLM pipelines to optimisation tools.
         </p>
 
         <div className="flex items-center justify-center md:justify-start gap-4 pt-2">

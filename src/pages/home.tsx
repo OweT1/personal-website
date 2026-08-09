@@ -1,7 +1,6 @@
 import { IntroSection } from "@/components/home/intro-section";
 import { ExperienceSection } from "@/components/home/experience-section";
 import { ProjectSection } from "@/components/home/project-section";
-import { CCASection } from "@/components/home/cca-section";
 import { SkillSection } from "@/components/home/skill-section";
 import { FooterSection } from "@/components/generalComponents/footer-section";
 
@@ -11,7 +10,6 @@ export function HomePage() {
       <IntroSection />
       <ExperienceSection />
       <ProjectSection />
-      <CCASection />
       <SkillSection />
       <FooterSection />
     </div>

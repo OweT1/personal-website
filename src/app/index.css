@@ -1,38 +1,26 @@
 @import "tailwindcss";
 
-/* 
-  In Tailwind 4, we define custom animations and theme overrides 
-  inside this @theme block.
-*/
-@theme {
-  /* 1. Define the custom 'float' animation for the profile picture */
-  --animate-float: float 6s ease-in-out infinite;
-
-  /* 2. Define the keyframes for the float */
-  @keyframes float {
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-15px);
-    }
-  }
-}
-
 /* Global Styles */
 html {
   scroll-behavior: smooth;
 }
 
 body {
-  /* Use Tailwind's orange-50 color variable directly */
-  background-color: var(--color-orange-50);
+  background-color: #fafafa;
+  color: #0f172a;
   margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   font-family:
-    system-ui,
+    "Inter",
     -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
     sans-serif;
+  text-rendering: optimizeLegibility;
 }
 
 .markdown > * {

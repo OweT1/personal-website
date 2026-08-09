@@ -1,10 +1,9 @@
 export const buttonVariants = {
-  miniHoverBlue:
-    "text-slate-600 hover:text-blue-600 hover:-translate-y-1 transition-all duration-300",
-  miniHoverOrange:
-    "text-slate-600 hover:text-orange-600 hover:-translate-y-1 transition-all duration-300",
-  gradualRedOrange:
-    "bg-gradient-to-r from-orange-500 to-red-500 text-white px-5 py-2.5 rounded-full font-semibold shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 hover:-translate-y-1 transition-all hover: cursor-pointer duration-300",
-  gradualRedBlue:
-    "bg-gradient-to-r from-blue-300 to-red-500 text-white px-5 py-2.5 rounded-full font-semibold shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 hover:-translate-y-1 transition-all hover: cursor-pointer duration-300",
+  icon: "text-slate-600 hover:text-red-600 hover:-translate-y-0.5 transition-all duration-200",
+  primary:
+    "inline-flex items-center justify-center gap-2 bg-red-600 text-white px-5 py-2.5 rounded-md font-semibold shadow-sm hover:bg-red-700 hover:-translate-y-0.5 transition-all duration-200",
+  secondary:
+    "inline-flex items-center justify-center gap-2 bg-white text-red-700 border border-red-200 px-5 py-2.5 rounded-md font-semibold hover:border-red-300 hover:bg-red-50 transition-colors duration-200",
+  headerLink:
+    "text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors",
 };

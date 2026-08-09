@@ -8,7 +8,7 @@ export function BlogPage() {
   return (
     <div className="max-w-4xl mx-auto px-6 pt-20 pb-16 space-y-6">
       <HomeButton />
-      <h1 className="text-4xl font-bold mb-6">✍️ Personal Blog</h1>
+      <h1 className="text-4xl font-bold mb-6">Blog</h1>
       <BlogSection posts={posts} />
     </div>
   );

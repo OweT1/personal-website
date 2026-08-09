@@ -1,85 +1,42 @@
-import JobFinder from "@/assets/projects/Job_Finder.png";
-import Chatbot from "@/assets/projects/Chatbot.png";
-import PersonalWebsite from "@/assets/projects/Personal_Website.png";
-import ResumeEvaluator from "@/assets/projects/Resume_Evaluator.png";
-
-interface Attribution {
-  href: string;
-  title: string;
-  description: string;
-}
-
 interface Project {
   id: number;
   title: string;
   description: string;
   link: string;
   tags: string[];
-  image: string;
-  attribution: Attribution;
 }
-
-const projectImageAttributions = {
-  job_finder: {
-    href: "https://www.flaticon.com/free-icons/job",
-    title: "job icons",
-    description: "Job icons created by Freepik - Flaticon",
-  },
-  chatbot: {
-    href: "https://www.flaticon.com/free-icons/chatbot",
-    title: "chatbot icons",
-    description: "Chatbot icons created by Flat Icons - Flaticon",
-  },
-  resume_evaluator: {
-    href: "https://www.flaticon.com/free-icons/headhunting",
-    title: "headhunting icons",
-    description: "Headhunting icons created by itim2101 - Flaticon",
-  },
-  personal_website: {
-    href: "https://www.flaticon.com/free-icons/personal-website",
-    title: "personal website icons",
-    description:
-      "Personal website icons created by Prosymbols Premium - Flaticon",
-  },
-};
 
 export const projects: Project[] = [
   {
     id: 1,
     title: "Job Finder",
     description:
-      "Built primarily with Python and the use of various APIs and LLMs.",
+      "Telegram bot that monitors job listings matching a user's profile and ranks them by relevance using LLM-based scoring, with run history persisted in Postgres.",
     link: "https://github.com/OweT1/jobs-are-the-way",
     tags: ["Telegram", "OpenRouter", "Postgres", "Alembic"],
-    image: JobFinder,
-    attribution: projectImageAttributions.job_finder,
   },
   {
     id: 2,
-    title: "Chatbot",
+    title: "Personal Chatbot",
     description:
-      "Frontend: Streamlit | Backend: Ollama, Tavily Search, Postgres, Docker",
+      "Local-first RAG assistant with a Streamlit UI, Ollama embeddings, and Tavily web retrieval so answers stay grounded in up-to-date sources.",
     link: "https://github.com/OweT1/personal-chatbot",
     tags: ["Streamlit", "Ollama", "Tavily Search", "RAG"],
-    image: Chatbot,
-    attribution: projectImageAttributions.chatbot,
   },
   {
     id: 3,
     title: "Resume Evaluator",
-    description: "Frontend: Gradio | Backend: Langchain, LangGraph, Crawl4AI",
+    description:
+      "LLM pipeline that crawls a target role's requirements and scores a resume against them with LangGraph, surfacing gaps and a prioritised fix plan.",
     link: "https://github.com/OweT1/resume-evaluator",
     tags: ["Gradio", "LangChain", "LangGraph", "Crawl4AI"],
-    image: ResumeEvaluator,
-    attribution: projectImageAttributions.resume_evaluator,
   },
   {
     id: 4,
     title: "Personal Website",
-    description: "Built with TypeScript, React, Tailwind CSS and Vite.",
+    description:
+      "This portfolio — a React + TypeScript single-page app with markdown-driven module reviews and a responsive, accessible layout.",
     link: "https://github.com/OweT1/personal-website",
     tags: ["TypeScript", "React", "Tailwind CSS", "Vite"],
-    image: PersonalWebsite,
-    attribution: projectImageAttributions.personal_website,
   },
 ];

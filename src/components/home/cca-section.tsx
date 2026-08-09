@@ -4,7 +4,7 @@ import { SectionHeader } from "../section-components";
 export function CCASection() {
   return (
     <section id="cca">
-      <SectionHeader header="Leadership Experience / CCAs" />
+      <SectionHeader header="Leadership Experience" />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {ccas.map((cca) => (
           <div
@@ -18,7 +18,7 @@ export function CCASection() {
               {cca.positions.map((position) => (
                 <li>
                   <div className="flex flex-row justify-between">
-                    <p className="text-orange-600 font-medium">
+                    <p className="text-red-600 font-medium">
                       {position.position}
                     </p>{" "}
                     <p className="text-slate-600">

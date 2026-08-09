@@ -3,6 +3,7 @@ import ShopeeCompanyLogo from "@/assets/companies/Shopee_Company_Logo.png";
 import DBSCompanyLogo from "@/assets/companies/DBS_Company_Logo.jpg";
 import TemasekCompanyLogo from "@/assets/companies/Temasek_Holdings_Company_Logo.png";
 import GICCompanyLogo from "@/assets/companies/GIC_Company_Logo.png";
+import VisaCompanyLogo from "@/assets/companies/Visa_Company_Logo.jpeg";
 
 interface Experience {
   id: number;
@@ -16,7 +17,19 @@ interface Experience {
 
 export const experiences: Experience[] = [
   {
-    id: 1,
+    id: 6,
+    role: "Data Engineer",
+    company: "Visa",
+    company_logo: VisaCompanyLogo,
+    start_date: "Jun 2026",
+    end_date: "Present",
+    description: [
+      "Contributed full-stack to the Card Finder application (Java Spring Boot, React/TypeScript, MySQL) for ~5,000 daily customer visits, building search functionality and mobile-responsive UI while supporting rollout from single-market to 3-market deployment",
+      "Won 1st place (out of 5 teams) at Visa's internal hackathon with VisaQuest, a gamified cashback rewards platform for cardholders; designed the backend microservices architecture, integrating 5+ internal Visa APIs",
+    ],
+  },
+  {
+    id: 5,
     role: "Quantitative Strategist Intern",
     company: "GIC",
     company_logo: GICCompanyLogo,
@@ -30,7 +43,7 @@ export const experiences: Experience[] = [
     ],
   },
   {
-    id: 2,
+    id: 4,
     role: "Machine Learning / Data Engineer Intern",
     company: "Temasek Holdings",
     company_logo: TemasekCompanyLogo,
@@ -57,7 +70,7 @@ export const experiences: Experience[] = [
     ],
   },
   {
-    id: 4,
+    id: 2,
     role: "Business Analyst Intern",
     company: "Shopee",
     company_logo: ShopeeCompanyLogo,
@@ -69,7 +82,7 @@ export const experiences: Experience[] = [
     ],
   },
   {
-    id: 5,
+    id: 1,
     role: "Data Scientist Intern",
     company: "SATS Ltd",
     company_logo: SATSCompanyLogo,

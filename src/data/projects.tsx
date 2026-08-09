@@ -35,7 +35,7 @@ export const projects: Project[] = [
     id: 4,
     title: "Personal Website",
     description:
-      "This portfolio — a React + TypeScript single-page app with markdown-driven module reviews and a responsive, accessible layout.",
+      "This portfolio - a React + TypeScript single-page app with markdown-driven module reviews and a responsive, accessible layout.",
     link: "https://github.com/OweT1/personal-website",
     tags: ["TypeScript", "React", "Tailwind CSS", "Vite"],
   },

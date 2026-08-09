@@ -3,7 +3,7 @@ import { IoIosMail } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 
 import profilePic from "@/assets/Owen_Picture.jpg";
-import { BLOG_URL, MODULE_URL } from "@/constants/paths";
+import { MODULE_URL } from "@/constants/paths";
 import { buttonVariants } from "@/constants/themes";
 
 export function IntroSection() {
@@ -11,92 +11,73 @@ export function IntroSection() {
   return (
     <section
       id="home"
-      // className="flex flex-col-reverse md:flex-row items-center justify-between gap-10" // vertical alignment
-      className="flex flex-row md:flex-col-reverse items-center justify-between gap-15"
+      className="flex flex-col md:flex-row items-center justify-between gap-12"
     >
       <div className="flex-1 text-center md:text-left space-y-6">
-        <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight">
-          Hi, I'm{" "}
-          <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
-            Owen!
-          </span>
+        <p className="text-sm font-semibold uppercase tracking-widest text-red-600">
+          B.Sc. (Hons) Data Science & Analytics · NUS
+        </p>
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900">
+          Owen Tan Keng Leng
         </h1>
-        <p className="text-lg md:text-xl text-slate-600 leading-relaxed max-w-lg mx-auto md:mx-0">
-          Year 4 Data Science and Analytics student from NUS. Passionate about
-          building{" "}
-          <span className="text-orange-600 font-semibold">
-            scalable and data-driven solutions!
-          </span>
+        <p className="text-lg md:text-xl text-slate-500 leading-relaxed max-w-lg mx-auto md:mx-0">
+          Data scientist and quantitative strategist with hands-on industry
+          experience at GIC, Temasek, and DBS. I build scalable, data-driven
+          systems — from LLM pipelines to optimisation tools.
         </p>
 
-        {/* 2. Add this div for the social links */}
-        <div className="flex items-center justify-center md:justify-start gap-5 pt-2">
-          {/* GitHub */}
+        <div className="flex items-center justify-center md:justify-start gap-4 pt-2">
           <a
             href="https://github.com/OweT1"
             target="_blank"
             rel="noopener noreferrer"
-            className={buttonVariants.miniHoverOrange}
+            className={buttonVariants.icon}
+            aria-label="GitHub"
           >
-            <FaGithub size={28} />
+            <FaGithub size={24} />
           </a>
 
-          {/* LinkedIn */}
           <a
             href="https://linkedin.com/in/owentankengleng"
             target="_blank"
             rel="noopener noreferrer"
-            className={buttonVariants.miniHoverBlue}
+            className={buttonVariants.icon}
+            aria-label="LinkedIn"
           >
-            <FaLinkedin size={28} />
+            <FaLinkedin size={24} />
           </a>
 
-          {/* Email */}
           <a
             href="mailto:owentan2021@gmail.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={buttonVariants.miniHoverOrange}
+            className={buttonVariants.icon}
+            aria-label="Email"
           >
-            <IoIosMail size={28} />
+            <IoIosMail size={24} />
           </a>
 
-          {/* Resume Download */}
           <a
-            href="OwenTanKengLeng_Resume.pdf" // looks in public folder
+            href="OwenTanKengLeng_Resume.pdf"
             download="Owen_Resume.pdf"
-            className={`flex items-center gap-2 ${buttonVariants.gradualRedOrange}`}
+            className={`${buttonVariants.primary} ml-2`}
           >
-            <FaFilePdf size={18} />
+            <FaFilePdf size={16} />
             Resume
           </a>
-        </div>
-        {/* Personal Website Sections*/}
-        <div className="flex items-center justify-center md:justify-start gap-5 pt-2">
-          <button
-            onClick={() => navigate(MODULE_URL)}
-            className={buttonVariants.gradualRedBlue}
-          >
-            🦁 Module Reviews
-          </button>
 
           <button
-            onClick={() => navigate(BLOG_URL)}
-            className={buttonVariants.gradualRedBlue}
+            onClick={() => navigate(MODULE_URL)}
+            className={buttonVariants.secondary}
           >
-            ✍️ Personal Blog
+            Module Reviews
           </button>
         </div>
       </div>
-      {/* Image Side (Floating) */}
-      <div className="relative group">
-        {/* Decorative Blur behind image */}
-        <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-red-400 rounded-full blur-2xl opacity-40 group-hover:opacity-60 transition-opacity duration-500"></div>
 
+      <div className="relative shrink-0">
         <img
           src={profilePic}
-          alt="Profile"
-          className="relative w-64 h-64 md:w-72 md:h-72 object-cover rounded-full border-4 border-white shadow-2xl animate-float"
+          alt="Owen Tan Keng Leng"
+          className="w-56 h-56 md:w-64 md:h-64 object-cover rounded-full border-4 border-white shadow-xl"
         />
       </div>
     </section>

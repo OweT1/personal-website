@@ -82,7 +82,7 @@ export function BlogPostPage() {
           <h1 className="mb-4 text-4xl font-bold tracking-tight">
             {post.title}
           </h1>
-          <div className="flex justify-center gap-10 sm:flex-row sm:justify-center sm:space-x-6 text-sm text-black-500">
+          <div className="flex justify-center gap-10 sm:flex-row sm:justify-center sm:space-x-6 text-sm text-slate-400">
             <time dateTime={post.date}>{post.date}</time>
             <span>{readingTime} min read</span>
           </div>

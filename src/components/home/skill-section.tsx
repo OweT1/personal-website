@@ -21,7 +21,7 @@ function SkillTab({ id, skillCategory, skillNames }: Skill) {
         hover:bg-slate-50 hover:cursor-pointer transition-colors focus:outline-none"
       >
         <span
-          className={`font-semibold transition-colors ${categoryIsOpen ? "text-orange-500" : "text-slate-700"}`}
+          className={`font-semibold transition-colors ${categoryIsOpen ? "text-red-600" : "text-slate-700"}`}
         >
           {skillCategory}
         </span>
@@ -66,7 +66,7 @@ function SkillTab({ id, skillCategory, skillNames }: Skill) {
                   {skillName.skillSubNames.map((skillSub, subIndex) => (
                     <span
                       key={subIndex}
-                      className="px-4 py-1.5 bg-slate-100 text-slate-600 rounded-full text-sm font-medium hover:bg-orange-500 hover:text-white transition-colors cursor-default"
+                      className="px-4 py-1.5 bg-slate-100 text-slate-600 rounded-full text-sm font-medium hover:bg-red-600 hover:text-white transition-colors cursor-default"
                     >
                       {skillSub}
                     </span>

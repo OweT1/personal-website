@@ -97,13 +97,13 @@ export function ModulePage() {
     <div className="max-w-4xl mx-auto px-6 pt-20">
       <HomeButton />
 
-      <h1 className="text-4xl font-bold mb-6">🦁 NUS Module Reviews</h1>
+      <h1 className="text-4xl font-bold mb-6">NUS Module Reviews</h1>
       {/* Top body */}
       <div className="mb-2">
         <div>
-          These are my honest reviews of the (main) modules I took at NUS!
+          Honest reviews of the modules I have taken at NUS, covering workload,
+          assessments, and whether they are worth your time.
         </div>
-        <div>Happy reading! 🙂</div>
       </div>
 
       {/* Search bar */}
@@ -112,7 +112,7 @@ export function ModulePage() {
           {/* Search input bar */}
           <input
             type="text" // type="search" gives a native HTML clear, but is not customisable
-            placeholder="🔍 Search by module code or name..."
+            placeholder="Search by module code or name..."
             value={searchTerm}
             onChange={(e) => onChangeSearchTerm(e.target.value)}
             onFocus={() => setHasFocus(true)}
@@ -141,7 +141,7 @@ export function ModulePage() {
                 setHighlightedIndex(-1);
               }
             }}
-            className="w-full px-4 py-2 border border-black-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+            className="w-full px-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
           />
           {/* Clear Search Results button */}
           {searchTerm !== "" && (
@@ -218,7 +218,7 @@ export function ModulePage() {
                       >
                         <button
                           onClick={() => toggleModule(module.id)}
-                          className="w-full flex items-center justify-between px-4 py-3 text-left bg-gray-50 hover:bg-gray-100 transition focus:outline-none focus:ring-2 focus:ring-blue-500 hover:cursor-pointer"
+                          className="w-full flex items-center justify-between px-4 py-3 text-left bg-gray-50 hover:bg-gray-100 transition focus:outline-none focus:ring-2 focus:ring-red-500 hover:cursor-pointer"
                         >
                           <div className="flex-1">
                             <h3 className="font-semibold text-lg">

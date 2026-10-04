@@ -1,9 +1,14 @@
 import { createContext, useContext } from "react";
 
-export type Theme = "light" | "dark" | "system";
+/**
+ * The order the toggle cycles through. A tuple rather than a plain array so
+ * `(typeof THEME_ORDER)[number]` resolves to the literal union below instead
+ * of `string`.
+ */
+export const THEME_ORDER = ["light", "dark", "system"] as const;
 
-/** The order the toggle cycles through. */
-export const THEME_ORDER: Theme[] = ["light", "dark", "system"];
+// Automatically creates: "light" | "dark" | "system"
+export type Theme = (typeof THEME_ORDER)[number];
 
 export interface ThemeContextValue {
   theme: Theme;

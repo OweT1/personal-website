@@ -7,6 +7,15 @@ import { motion, useReducedMotion, useScroll, useTransform } from "motion/react"
 import profilePic from "@/assets/Owen_Picture.jpg";
 import { MODULE_URL } from "@/constants/paths";
 import { buttonVariants } from "@/constants/themes";
+import {
+  EASE_OUT_EXPO,
+  fadeUp,
+  staggerContainer,
+} from "@/components/motion/variants";
+
+// Hoisted so the variant tree is built once, not on every render.
+const textStagger = staggerContainer(0.09, 0.05);
+const textItem = fadeUp(20);
 
 export function IntroSection() {
   const navigate = useNavigate();
@@ -22,19 +31,6 @@ export function IntroSection() {
   const imageScale = useTransform(scrollYProgress, [0, 1], [1, 0.92]);
   const textY = useTransform(scrollYProgress, [0, 1], [0, 40]);
 
-  const container = {
-    hidden: {},
-    visible: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
-  };
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as const },
-    },
-  };
-
   return (
     <section
       ref={sectionRef}
@@ -44,90 +40,89 @@ export function IntroSection() {
       <motion.div
         className="flex-1 text-center md:text-left space-y-6"
         style={reduceMotion ? undefined : { y: textY }}
+        variants={textStagger}
+        initial="hidden"
+        animate="visible"
       >
-        <motion.div variants={container} initial="hidden" animate="visible">
-          <motion.p
-            variants={item}
-            className="text-sm font-semibold uppercase tracking-widest text-brand"
+        <motion.p
+          variants={textItem}
+          className="text-sm font-semibold uppercase tracking-widest text-brand"
+        >
+          B.Sc. (Hons) Data Science &amp; Analytics · NUS
+        </motion.p>
+
+        <motion.h1
+          variants={textItem}
+          className="text-4xl md:text-5xl font-bold tracking-tight text-ink"
+        >
+          Owen Tan Keng Leng
+        </motion.h1>
+
+        <motion.p
+          variants={textItem}
+          className="text-lg md:text-xl text-ink-muted leading-relaxed max-w-lg mx-auto md:mx-0"
+        >
+          Data and Machine Learning Engineer with hands-on industry experience at
+          GIC, Temasek, and DBS. I build scalable, data-driven systems from LLM
+          pipelines to optimisation tools.
+        </motion.p>
+
+        <motion.div
+          variants={textItem}
+          className="flex items-center justify-center md:justify-start gap-4 pt-2"
+        >
+          <a
+            href="https://github.com/OweT1"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={buttonVariants.icon}
+            aria-label="GitHub"
           >
-            B.Sc. (Hons) Data Science &amp; Analytics · NUS
-          </motion.p>
+            <FaGithub size={24} />
+          </a>
 
-          <motion.h1
-            variants={item}
-            className="text-4xl md:text-5xl font-bold tracking-tight text-ink"
+          <a
+            href="https://linkedin.com/in/owentankengleng"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={buttonVariants.icon}
+            aria-label="LinkedIn"
           >
-            Owen Tan Keng Leng
-          </motion.h1>
+            <FaLinkedin size={24} />
+          </a>
 
-          <motion.p
-            variants={item}
-            className="text-lg md:text-xl text-ink-muted leading-relaxed max-w-lg mx-auto md:mx-0"
+          <a
+            href="mailto:owentan2021@gmail.com"
+            className={buttonVariants.icon}
+            aria-label="Email"
           >
-            Data and Machine Learning Engineer with hands-on industry experience
-            at GIC, Temasek, and DBS. I build scalable, data-driven systems from
-            LLM pipelines to optimisation tools.
-          </motion.p>
+            <IoIosMail size={24} />
+          </a>
 
-          <motion.div
-            variants={item}
-            className="flex items-center justify-center md:justify-start gap-4 pt-2"
+          <a
+            href="OwenTanKengLeng_Resume.pdf"
+            download="Owen_Resume.pdf"
+            className={`${buttonVariants.primary} ml-2`}
           >
-            <a
-              href="https://github.com/OweT1"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={buttonVariants.icon}
-              aria-label="GitHub"
-            >
-              <FaGithub size={24} />
-            </a>
+            <FaFilePdf size={16} />
+            Resume
+          </a>
 
-            <a
-              href="https://linkedin.com/in/owentankengleng"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={buttonVariants.icon}
-              aria-label="LinkedIn"
-            >
-              <FaLinkedin size={24} />
-            </a>
-
-            <a
-              href="mailto:owentan2021@gmail.com"
-              className={buttonVariants.icon}
-              aria-label="Email"
-            >
-              <IoIosMail size={24} />
-            </a>
-
-            <a
-              href="OwenTanKengLeng_Resume.pdf"
-              download="Owen_Resume.pdf"
-              className={`${buttonVariants.primary} ml-2`}
-            >
-              <FaFilePdf size={16} />
-              Resume
-            </a>
-
-            <button
-              onClick={() => navigate(MODULE_URL)}
-              className={buttonVariants.secondary}
-            >
-              Module Reviews
-            </button>
-          </motion.div>
+          <button
+            onClick={() => navigate(MODULE_URL)}
+            className={buttonVariants.secondary}
+          >
+            Module Reviews
+          </button>
         </motion.div>
       </motion.div>
 
       <motion.div
         className="relative shrink-0"
         style={reduceMotion ? undefined : { y: imageY, scale: imageScale }}
-        initial={
-          reduceMotion ? false : { opacity: 0, scale: 0.85, rotate: -4 }
-        }
+        initial={reduceMotion ? false : { opacity: 0, scale: 0.85, rotate: -4 }}
         animate={{ opacity: 1, scale: 1, rotate: 0 }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 0.8, ease: EASE_OUT_EXPO }}
       >
         {/* Soft accent glow behind the portrait. */}
         <div

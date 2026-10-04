@@ -2,24 +2,58 @@ import { useState, useMemo, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import type { Variants } from "motion/react";
+import type { ReactNode } from "react";
 
 import { HomeButton } from "@/components/generalComponents/buttons";
 import { Reveal } from "@/components/motion/reveal";
 import { moduleReviewsData } from "@/data/reviews-data";
 
-/** Chevron used by both collapsible levels. */
-function Chevron({ rotated }: { rotated: boolean }) {
+const COLLAPSE_TRANSITION = { duration: 0.28, ease: "easeInOut" } as const;
+
+const PANEL: Variants = {
+  collapsed: { height: 0, opacity: 0 },
+  expanded: { height: "auto", opacity: 1 },
+};
+
+/** Animates a panel between its natural height and zero. */
+function Collapse({ open, children }: { open: boolean; children: ReactNode }) {
   const reduceMotion = useReducedMotion();
 
+  if (reduceMotion) {
+    return open ? <div>{children}</div> : null;
+  }
+
   return (
-    <motion.span
-      animate={reduceMotion ? undefined : { rotate: rotated ? 180 : 0 }}
-      transition={{ duration: 0.25, ease: "easeOut" }}
-      className="inline-block text-ink-subtle"
+    <AnimatePresence initial={false}>
+      {open && (
+        <motion.div
+          key="panel"
+          variants={PANEL}
+          initial="collapsed"
+          animate="expanded"
+          exit="collapsed"
+          transition={COLLAPSE_TRANSITION}
+          className="overflow-hidden"
+        >
+          {children}
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+/** Chevron used by both collapsible levels. */
+function Chevron({ rotated }: { rotated: boolean }) {
+  return (
+    <span
       aria-hidden="true"
+      className={`inline-block text-ink-subtle transition-transform duration-200 ${
+        rotated ? "rotate-180" : ""
+      }`}
     >
       ▾
-    </motion.span>
+    </span>
   );
 }
 
@@ -232,73 +266,47 @@ export function ModulePage() {
                     <Chevron rotated={isOpen} />
                   </button>
 
-                  {/* Content area - animates open/closed height */}
-                  <AnimatePresence initial={false}>
-                    {isOpen && (
-                      <motion.div
-                        key="content"
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.28, ease: "easeInOut" }}
-                        className="overflow-hidden"
-                      >
-                        <div className="divide-y divide-line">
-                          {modulesInYear.map((module) => {
-                            const moduleOpen = openModules.has(module.id);
-                            return (
-                              <div
-                                key={module.id}
-                                className="m-2 border border-line rounded overflow-hidden
-                                           shadow-sm bg-surface w-9/10 mx-auto"
-                              >
-                                <button
-                                  onClick={() => toggleModule(module.id)}
-                                  aria-expanded={moduleOpen}
-                                  className="w-full flex items-center justify-between px-4
-                                             py-3 text-left bg-surface-hover hover:bg-surface-muted
-                                             transition-colors focus:outline-none
-                                             focus:ring-2 focus:ring-brand inset-ring-0
-                                             hover:cursor-pointer"
-                                >
-                                  <div className="flex-1">
-                                    <h3 className="font-semibold text-lg text-ink">
-                                      {module.moduleCode} {module.moduleName}
-                                    </h3>
-                                  </div>
-                                  <Chevron rotated={moduleOpen} />
-                                </button>
-
-                                <AnimatePresence initial={false}>
-                                  {moduleOpen && (
-                                    <motion.div
-                                      key="review"
-                                      initial={{ height: 0, opacity: 0 }}
-                                      animate={{ height: "auto", opacity: 1 }}
-                                      exit={{ height: 0, opacity: 0 }}
-                                      transition={{
-                                        duration: 0.28,
-                                        ease: "easeInOut",
-                                      }}
-                                      className="overflow-hidden"
-                                    >
-                                      <div className="border-t border-line bg-surface">
-                                        <div className="p-4 prose prose-sm max-w-none markdown">
-                                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                            {module.content}
-                                          </ReactMarkdown>
-                                        </div>
-                                      </div>
-                                    </motion.div>
-                                  )}
-                                </AnimatePresence>
+                  <Collapse open={isOpen}>
+                    <div className="divide-y divide-line">
+                      {modulesInYear.map((module) => {
+                        const moduleOpen = openModules.has(module.id);
+                        return (
+                          <div
+                            key={module.id}
+                            className="m-2 border border-line rounded overflow-hidden
+                                       shadow-sm bg-surface w-9/10 mx-auto"
+                          >
+                            <button
+                              onClick={() => toggleModule(module.id)}
+                              aria-expanded={moduleOpen}
+                              className="w-full flex items-center justify-between px-4
+                                         py-3 text-left bg-surface-hover hover:bg-surface-muted
+                                         transition-colors focus:outline-none
+                                         focus:ring-2 focus:ring-brand inset-ring-0
+                                         hover:cursor-pointer"
+                            >
+                              <div className="flex-1">
+                                <h3 className="font-semibold text-lg text-ink">
+                                  {module.moduleCode} {module.moduleName}
+                                </h3>
                               </div>
-                            );
-                          })}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                              <Chevron rotated={moduleOpen} />
+                            </button>
+
+                            <Collapse open={moduleOpen}>
+                              <div className="border-t border-line bg-surface">
+                                <div className="p-4 prose prose-sm max-w-none markdown">
+                                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                    {module.content}
+                                  </ReactMarkdown>
+                                </div>
+                              </div>
+                            </Collapse>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </Collapse>
                 </div>
               </Reveal>
             );

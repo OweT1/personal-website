@@ -2,6 +2,9 @@ import { createContext, useContext } from "react";
 
 export type Theme = "light" | "dark" | "system";
 
+/** The order the toggle cycles through. */
+export const THEME_ORDER: Theme[] = ["light", "dark", "system"];
+
 export interface ThemeContextValue {
   theme: Theme;
   /** The theme actually rendered on screen, with "system" already resolved. */

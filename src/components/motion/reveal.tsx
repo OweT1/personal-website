@@ -1,8 +1,7 @@
 import { motion, useReducedMotion } from "motion/react";
-import type { Variants } from "motion/react";
 import type { ReactNode } from "react";
 
-const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
+import { DURATION, EASE_OUT_EXPO, fadeUp, staggerContainer } from "./variants";
 
 interface RevealProps {
   children: ReactNode;
@@ -21,7 +20,7 @@ export function Reveal({
   children,
   y = 24,
   delay = 0,
-  duration = 0.6,
+  duration = DURATION,
   className,
   amount = 0.25,
   repeat = false,
@@ -57,7 +56,7 @@ interface RevealGroupProps {
 export function RevealGroup({
   children,
   className,
-  stagger = 0.08,
+  stagger,
   delayChildren = 0,
   amount = 0.15,
 }: RevealGroupProps) {
@@ -67,17 +66,10 @@ export function RevealGroup({
     return <div className={className}>{children}</div>;
   }
 
-  const variants: Variants = {
-    hidden: {},
-    visible: {
-      transition: { staggerChildren: stagger, delayChildren },
-    },
-  };
-
   return (
     <motion.div
       className={className}
-      variants={variants}
+      variants={staggerContainer(stagger, delayChildren)}
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount }}
@@ -93,6 +85,10 @@ interface RevealItemProps {
   className?: string;
 }
 
+/**
+ * Takes its timing from the enclosing RevealGroup's variants, so it needs no
+ * props of its own beyond the travel distance.
+ */
 export function RevealItem({ children, y = 20, className }: RevealItemProps) {
   const reduceMotion = useReducedMotion();
 
@@ -100,17 +96,8 @@ export function RevealItem({ children, y = 20, className }: RevealItemProps) {
     return <div className={className}>{children}</div>;
   }
 
-  const variants: Variants = {
-    hidden: { opacity: 0, y },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.55, ease: EASE_OUT_EXPO },
-    },
-  };
-
   return (
-    <motion.div className={className} variants={variants}>
+    <motion.div className={className} variants={fadeUp(y)}>
       {children}
     </motion.div>
   );

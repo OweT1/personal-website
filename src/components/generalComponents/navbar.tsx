@@ -3,7 +3,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Menu, X } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { BASE_URL, BLOG_URL, MODULE_URL } from "@/constants/paths";
+import { BLOG_URL, MODULE_URL } from "@/constants/paths";
 import { buttonVariants } from "@/constants/themes";
 import { ThemeToggle } from "@/components/generalComponents/theme-toggle";
 import { useScrollSpy } from "@/hooks/use-scroll-spy";
@@ -12,9 +12,17 @@ const sections = [
   { label: "Experience", id: "experience" },
   { label: "Projects", id: "projects" },
   { label: "Skills", id: "skills" },
-];
+] as const;
 
 const sectionIds = sections.map((section) => section.id);
+
+/** Grouped so the mobile menu and the desktop bar cannot drift apart. */
+interface NavItem {
+  key: string;
+  label: string;
+  isActive: boolean;
+  onClick: () => void;
+}
 
 export function NavBar() {
   const navigate = useNavigate();
@@ -22,8 +30,17 @@ export function NavBar() {
   const reduceMotion = useReducedMotion();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const isHome = location.pathname === BASE_URL || location.pathname === "/";
+  // `basename` is already stripped from location.pathname, so "/" is home.
+  const isHome = location.pathname === "/";
   const activeId = useScrollSpy(sectionIds, isHome);
+
+  const goToRoute = useCallback(
+    (path: string) => {
+      setMenuOpen(false);
+      navigate(path);
+    },
+    [navigate],
+  );
 
   const scrollToSection = useCallback(
     (id: string) => {
@@ -46,7 +63,7 @@ export function NavBar() {
     [isHome, navigate, reduceMotion],
   );
 
-  const navItems = useMemo(
+  const navItems = useMemo<NavItem[]>(
     () => [
       ...sections.map((section) => ({
         key: section.id,
@@ -58,22 +75,16 @@ export function NavBar() {
         key: MODULE_URL,
         label: "Module Reviews",
         isActive: location.pathname.startsWith(MODULE_URL),
-        onClick: () => {
-          setMenuOpen(false);
-          navigate(MODULE_URL);
-        },
+        onClick: () => goToRoute(MODULE_URL),
       },
       {
         key: BLOG_URL,
         label: "Blog",
         isActive: location.pathname.startsWith(BLOG_URL),
-        onClick: () => {
-          setMenuOpen(false);
-          navigate(BLOG_URL);
-        },
+        onClick: () => goToRoute(BLOG_URL),
       },
     ],
-    [activeId, isHome, location.pathname, navigate, scrollToSection],
+    [activeId, goToRoute, isHome, location.pathname, scrollToSection],
   );
 
   return (
@@ -141,11 +152,7 @@ export function NavBar() {
   );
 }
 
-interface NavLinkProps {
-  item: { label: string; isActive: boolean; onClick: () => void };
-}
-
-function NavLink({ item }: NavLinkProps) {
+function NavLink({ item }: { item: NavItem }) {
   const reduceMotion = useReducedMotion();
 
   return (

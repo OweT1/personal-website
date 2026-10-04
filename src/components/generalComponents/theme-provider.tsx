@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
+  THEME_ORDER,
   ThemeContext,
   type Theme,
   type ThemeContextValue,
@@ -12,18 +13,11 @@ const DARK_QUERY = "(prefers-color-scheme: dark)";
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 
 /**
- * Marks <html> while the wipe overlay is on screen, to suspend the token
- * cross-fade so the sweep is the only thing moving. Without it the area the
- * edge has already cleared would be caught mid-fade.
+ * Marks <html> for the duration of a view transition, so the registered tokens
+ * land on their final values immediately. A transition still in flight when the
+ * browser snapshots would be captured part-way through the fade.
  */
 const SWITCHING_CLASS = "theme-switching";
-
-/**
- * Length of the sweep. Kept in step with nothing in CSS - the edge is
- * animated imperatively - but it matches the softness stop so the ramp travels
- * about a third of the viewport.
- */
-const WIPE_DURATION_MS = 600;
 
 function readStoredTheme(): Theme {
   if (typeof window === "undefined") return "system";
@@ -44,11 +38,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   // Track the OS preference so "system" stays live when the user flips it.
   const [systemIsDark, setSystemIsDark] = useState(prefersDark);
 
-  // The wipe currently on screen, so a second click can cancel it.
-  const activeWipeRef = useRef<{
-    overlay: HTMLElement;
-    animation: Animation;
-  } | null>(null);
+  // The transition currently on screen, so a second click can take over
+  // without the first one's cleanup clearing state the second one needs.
+  const activeTransitionRef = useRef<ViewTransition | null>(null);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia(DARK_QUERY);
@@ -97,93 +89,78 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, [resolvedTheme, systemIsDark, theme, writeDocumentTheme]);
 
   /**
-   * Applies `next` behind a soft edge sweeping from right to left.
+   * Applies `next` as a cross-fade between the two rendered themes.
    *
-   * The registered `@property --theme-wipe` is animated from just past the
-   * right edge to just past the left, and it masks a full-screen overlay holding
-   * the *outgoing* canvas colour. Regions the edge has not reached stay covered;
-   * once it passes, the new theme is already fully repainted underneath and is
-   * revealed. That is what gives the change direction - a plain token
-   * cross-fade changes every surface simultaneously and cannot travel.
+   * `document.startViewTransition` snapshots the page before and after the swap
+   * and animates between the two bitmaps. Both snapshots are textures the
+   * compositor blends, so nothing repaints per frame - which is the whole
+   * reason this is not done with an overlay. An overlay holding the outgoing
+   * canvas colour has to re-rasterise a full-viewport gradient on every frame
+   * (it animates a registered custom property that feeds `mask-image`), and it
+   * flattens the page to a single colour for the duration, so the layout pops
+   * back in behind the edge. A snapshot keeps the real content on screen
+   * throughout and simply dissolves between the two colour schemes.
    *
-   * Under reduced motion the overlay is skipped entirely and the short token
-   * fade in index.css takes over.
+   * Three paths:
+   *   - reduced motion: no snapshot, the short token fade in index.css runs
+   *   - no View Transitions support: same, at the full token-fade duration
+   *   - otherwise: the snapshot cross-fade
    */
   const commitTheme = useCallback(
     (next: Theme) => {
-      const root = document.documentElement;
-
-      if (window.matchMedia(REDUCED_MOTION_QUERY).matches) {
+      if (
+        window.matchMedia(REDUCED_MOTION_QUERY).matches ||
+        !document.startViewTransition
+      ) {
         applyTheme(next);
         return;
       }
 
-      // Outgoing canvas colour, sampled before the swap. The tokens are
-      // registered as <color>, so this resolves to a usable colour string.
-      const previousCanvas =
-        getComputedStyle(root).getPropertyValue("--canvas").trim() || "#fafafa";
+      const root = document.documentElement;
 
-      // Cancel any in-flight wipe so repeated clicks don't stack overlays.
-      // `cancel()` also settles the abandoned animation's `finished`, so its
-      // cleanup runs instead of leaking the overlay and the active class.
-      activeWipeRef.current?.animation.cancel();
-      activeWipeRef.current?.overlay.remove();
-      activeWipeRef.current = null;
-
-      const overlay = document.createElement("div");
-      overlay.setAttribute("aria-hidden", "true");
-      overlay.className = "theme-wipe-overlay";
-      overlay.style.background = previousCanvas;
-      document.body.appendChild(overlay);
-
-      // The overlay and the theme swap are created in the same task, so the
-      // browser never paints an uncovered page before the edge starts moving.
+      // The new snapshot is taken one frame after the callback, so freeze the
+      // token transition across the capture. Scoped to `html` itself: a blanket
+      // reset on `*` would also suspend card hovers and the navbar backdrop,
+      // which then visibly snap back once the class comes off.
       root.classList.add(SWITCHING_CLASS);
-      applyTheme(next);
 
-      const animation = overlay.animate(
-        { "--theme-wipe": ["122%", "-26%"] },
-        {
-          duration: WIPE_DURATION_MS,
-          // Strong ease-out: the edge leaves quickly so the new theme appears
-          // almost at once, then settles. A symmetric ease reads as sluggish.
-          easing: "cubic-bezier(0.22, 1, 0.36, 1)",
-        },
-      );
-
-      const wipe = { overlay, animation };
-      activeWipeRef.current = wipe;
+      // Starting a transition implicitly skips any that is already running, so
+      // rapid clicks advance the cycle instead of queueing up.
+      const transition = document.startViewTransition(() => applyTheme(next));
+      activeTransitionRef.current = transition;
 
       const cleanup = () => {
-        overlay.remove();
-        if (activeWipeRef.current === wipe) {
-          activeWipeRef.current = null;
+        if (activeTransitionRef.current === transition) {
+          activeTransitionRef.current = null;
           root.classList.remove(SWITCHING_CLASS);
         }
       };
 
-      // Both arms handle the animation being cancelled mid-flight.
-      void animation.finished.then(cleanup, cleanup);
+      // Both arms handle the update callback throwing.
+      void transition.finished.then(cleanup, cleanup);
     },
     [applyTheme],
   );
 
-  const setTheme = useCallback(
-    (next: Theme) => {
-      commitTheme(next);
-    },
-    [commitTheme],
-  );
+  // Mirrors `theme` synchronously. `toggleTheme` reads this rather than the
+  // state value because two clicks in the same task would each close over the
+  // same rendered `theme` and compute the same next value, so the cycle would
+  // stall instead of advancing.
+  const themeRef = useRef(theme);
+  themeRef.current = theme;
 
   const toggleTheme = useCallback(() => {
-    const order: Theme[] = ["light", "dark", "system"];
-    const currentIndex = order.indexOf(theme);
-    commitTheme(order[(currentIndex + 1) % order.length]);
-  }, [commitTheme, theme]);
+    const currentIndex = THEME_ORDER.indexOf(themeRef.current);
+    const next = THEME_ORDER[(currentIndex + 1) % THEME_ORDER.length];
+    // Advance the mirror before committing, so a following click in the same
+    // task reads the new value even though React has not re-rendered yet.
+    themeRef.current = next;
+    commitTheme(next);
+  }, [commitTheme]);
 
   const value = useMemo<ThemeContextValue>(
-    () => ({ theme, resolvedTheme, setTheme, toggleTheme }),
-    [theme, resolvedTheme, setTheme, toggleTheme],
+    () => ({ theme, resolvedTheme, setTheme: commitTheme, toggleTheme }),
+    [theme, resolvedTheme, commitTheme, toggleTheme],
   );
 
   return (

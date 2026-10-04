@@ -1,9 +1,17 @@
 import { useEffect, useState } from "react";
 
+/** Height of the fixed navbar, minus a little breathing room. */
+const NAV_OFFSET = 128;
+
 /**
- * Tracks which anchor section is currently in view so the navbar can
- * highlight it. Uses IntersectionObserver against a root margin that treats
- * the upper third of the viewport as the "active" band.
+ * Root margin that carves out the band below the navbar; a section counts as
+ * active while any part of it sits in there.
+ */
+const ROOT_MARGIN = "-96px 0px -55% 0px";
+
+/**
+ * Tracks which anchor section is currently in view so the navbar can highlight
+ * it. Uses IntersectionObserver against the band above.
  */
 export function useScrollSpy(sectionIds: string[], enabled = true): string | null {
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -20,40 +28,35 @@ export function useScrollSpy(sectionIds: string[], enabled = true): string | nul
 
     if (elements.length === 0) return;
 
-    const visible = new Set<string>();
+    const visible = new Set<HTMLElement>();
 
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting) {
-            visible.add(entry.target.id);
+            visible.add(entry.target as HTMLElement);
           } else {
-            visible.delete(entry.target.id);
+            visible.delete(entry.target as HTMLElement);
           }
         }
 
-        // Sections can overlap in the active band; pick the one closest to
-        // the top of the viewport for a stable, predictable highlight.
-        let bestId: string | null = null;
+        // Sections can overlap in the band; pick the one closest to the navbar
+        // for a stable, predictable highlight.
+        let best: HTMLElement | null = null;
         let bestDistance = Number.POSITIVE_INFINITY;
-        for (const id of visible) {
-          const element = document.getElementById(id);
-          if (!element) continue;
+        for (const element of visible) {
           const distance = Math.abs(
-            element.getBoundingClientRect().top - 128,
+            element.getBoundingClientRect().top - NAV_OFFSET,
           );
           if (distance < bestDistance) {
             bestDistance = distance;
-            bestId = id;
+            best = element;
           }
         }
 
-        setActiveId(bestId);
+        setActiveId(best?.id ?? null);
       },
-      {
-        rootMargin: "-96px 0px -55% 0px",
-        threshold: [0, 0.15, 0.4],
-      },
+      { rootMargin: ROOT_MARGIN, threshold: [0, 0.15, 0.4] },
     );
 
     elements.forEach((element) => observer.observe(element));

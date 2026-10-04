@@ -10,6 +10,9 @@
    from one value to the next; registered ones interpolate, and because they
    inherit, every descendant using var(--surface) etc. re-resolves each frame.
    This is the fallback path for browsers without the View Transitions API.
+
+   `initial-value` here must stay in step with the `:root` block further down -
+   it is what the root element resolves to before any rule applies.
 --------------------------------------------------------------------------- */
 @property --canvas {
   syntax: "<color>";
@@ -82,15 +85,6 @@
   initial-value: rgb(255 255 255 / 0.8);
 }
 
-/* Position of the leading edge of the directional theme wipe, measured from
-   the right-hand side of the viewport. Registered so it can be interpolated;
-   the initial value keeps the overlay fully opaque before JS animates it. */
-@property --theme-wipe {
-  syntax: "<percentage>";
-  inherits: false;
-  initial-value: 122%;
-}
-
 /* ---------------------------------------------------------------------------
    Semantic theme tokens.
    Raw variables live here; @theme inline maps them to Tailwind utilities
@@ -110,8 +104,13 @@
   --brand-hover: #b91c1c;
   --brand-soft: #fef2f2;
   --brand-ink: #ffffff;
-  --shadow-color: 15 23 42;
   --nav-bg: rgb(255 255 255 / 0.8);
+
+  /* The set of tokens the cross-fade below animates. Listing them once keeps
+     the base rule and the reduced-motion override from drifting apart. */
+  --theme-tokens: --canvas, --surface, --surface-muted, --surface-hover,
+    --line, --line-strong, --ink, --ink-muted, --ink-subtle, --brand,
+    --brand-hover, --brand-soft, --brand-ink, --nav-bg;
 }
 
 .dark {
@@ -128,7 +127,6 @@
   --brand-hover: #fca5a5;
   --brand-soft: #2a1416;
   --brand-ink: #1a0a0a;
-  --shadow-color: 0 0 0;
   --nav-bg: rgb(8 11 20 / 0.8);
 }
 
@@ -153,37 +151,29 @@
     scroll-behavior: smooth;
     scroll-padding-top: 6rem;
 
-    /* This transition list is the cross-fade. The tokens are registered with
+    /* This transition is the cross-fade. The tokens are registered with
        `@property` above, so flipping the `dark` class interpolates them and
-       every surface that references one fades with it - no JS animation and
-       no overlay involved.
+       every surface that references one fades with it - no JS animation and no
+       overlay involved.
 
-       Duration must stay in step with `WIPE_DURATION_MS` in
-       theme-provider.tsx, which owns how long `.theme-switching` suppresses
-       element transitions while the wipe is on screen. */
-    transition:
-      --canvas 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-      --surface 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-      --surface-muted 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-      --surface-hover 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-      --line 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-      --line-strong 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-      --ink 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-      --ink-muted 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-      --ink-subtle 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-      --brand 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-      --brand-hover 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-      --brand-soft 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-      --brand-ink 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-      --nav-bg 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+       This path runs on first paint and when the OS scheme changes under
+       "system". An explicit toggle goes through the directional wipe in
+       theme-provider.tsx instead, which suppresses these transitions while it
+       is on screen via `.theme-switching`. */
+    transition-property: var(--theme-tokens);
+    transition-duration: 0.4s;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* While the tokens interpolate, element-level transitions would lag behind
-     them (cards, the body, buttons all easing toward a moving target), which
-     smears the fade. Suspending them keeps the whole page in lockstep. */
-  html.theme-switching *,
-  html.theme-switching *::before,
-  html.theme-switching *::after {
+  /* A View Transition snapshots the page one frame after the theme swap, so the
+     tokens have to be at their final values by then - a transition still in
+     flight would be captured part-way and the new snapshot would carry a
+     half-faded colour.
+
+     Scoped to `html` rather than reset across `*`, so card hovers and the
+     navbar backdrop keep animating normally and nothing snaps back when the
+     class comes off. */
+  html.theme-switching {
     transition: none !important;
   }
 
@@ -260,13 +250,23 @@
 }
 
 /* ---------------------------------------------------------------------------
-   Theme reveal.
+   Theme cross-fade.
 
-   A fixed overlay filled with the outgoing theme's canvas colour is shrunk
-   away by the provider via the Web Animations API; see theme-provider.tsx.
-   Nothing is needed here beyond suspending the token transitions so the page
-   underneath is fully repainted by the time the overlay uncovers it.
+   A View Transition snapshots the page either side of the swap and animates
+   between the two bitmaps; both are textures the compositor blends, so a theme
+   change costs no per-frame repaint. `::view-transition-old/new(root)` are the
+   root element's snapshots - only the timing is overridden here, keeping the
+   UA fade keyframes and the `plus-lighter` blend that stops the midpoint from
+   dipping darker than either theme.
+
+   Browsers without View Transitions never reach this point; they fall back to
+   the token transition on `html` above.
 --------------------------------------------------------------------------- */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.4s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
 
 /* Honour the OS-level reduced-motion preference for every CSS-driven
    transition, including the navbar backdrop and card hovers. Motion's
@@ -286,70 +286,12 @@
   }
 
   /* A theme cross-fade is a pure opacity change with no movement or scaling,
-     so reduced motion has no reason to suppress it. Restored at a shorter
-     duration: `html` outranks the `*` reset above on specificity, and the
-     `!important` on both sides is what keeps the token fade alive while every
-     other transition in the page stays disabled. */
+     so reduced motion has no reason to suppress it. Only the duration needs
+     restoring: `transition-property` and the timing function survive the `*`
+     reset above untouched, but its `!important` duration does not, so this has
+     to be `!important` too in order to win. */
   html {
-    transition:
-      --canvas 0.12s linear !important,
-      --surface 0.12s linear !important,
-      --surface-muted 0.12s linear !important,
-      --surface-hover 0.12s linear !important,
-      --line 0.12s linear !important,
-      --line-strong 0.12s linear !important,
-      --ink 0.12s linear !important,
-      --ink-muted 0.12s linear !important,
-      --ink-subtle 0.12s linear !important,
-      --brand 0.12s linear !important,
-      --brand-hover 0.12s linear !important,
-      --brand-soft 0.12s linear !important,
-      --brand-ink 0.12s linear !important,
-      --nav-bg 0.12s linear !important;
+    transition-duration: 0.12s !important;
+    transition-timing-function: linear;
   }
-}
-
-/* ---------------------------------------------------------------------------
-   Directional theme wipe.
-
-   A uniform token cross-fade cannot travel: every surface changes at the same
-   instant. To move the change from right to left, a full-screen overlay holds
-   the *outgoing* canvas colour and its opacity is clipped by a soft edge that
-   sweeps leftwards. Anything the edge has not reached is still covered; once
-   it passes, the new theme underneath is fully repainted and revealed.
-
-   The trade-off is that covered regions show a flat colour rather than the old
-   content. A soft gradient edge keeps it reading as a dissolve. Preserving the
-   old content in that region would require a pixel snapshot, i.e. the View
-   Transitions API.
-   --------------------------------------------------------------------------- */
-
-.theme-wipe-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  pointer-events: none;
-
-  /* `to left` puts 0% at the right edge, so --theme-wipe counts inwards from
-     the right. Opaque up to the edge minus the soft width, then a ramp down to
-     fully transparent at the edge itself. A hard `transparent` stop at the same
-     offset would give a crisp line instead of a dissolve. */
-  mask-image: linear-gradient(
-    to left,
-    rgb(0 0 0 / 1) calc(var(--theme-wipe) - var(--theme-wipe-softness)),
-    rgb(0 0 0 / 1) var(--theme-wipe),
-    rgb(0 0 0 / 0) var(--theme-wipe)
-  );
-  -webkit-mask-image: linear-gradient(
-    to left,
-    rgb(0 0 0 / 1) calc(var(--theme-wipe) - var(--theme-wipe-softness)),
-    rgb(0 0 0 / 1) var(--theme-wipe),
-    rgb(0 0 0 / 0) var(--theme-wipe)
-  );
-}
-
-.theme-wipe-overlay {
-  /* Width of the dissolve ramp. Wide enough to read as a fade rather than a
-     wipe, narrow enough that the new theme is visible early on. */
-  --theme-wipe-softness: 26%;
 }

@@ -13,11 +13,24 @@ const DARK_QUERY = "(prefers-color-scheme: dark)";
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 
 /**
- * Marks <html> for the duration of a view transition, so the registered tokens
- * land on their final values immediately. A transition still in flight when the
- * browser snapshots would be captured part-way through the fade.
+ * Marks <html> for the duration of a theme change, so descendant colour
+ * transitions stop competing with the token fade on <html>. Without it, each
+ * element that transitions background-color chases the moving token value and
+ * arrives on its own schedule, so the change reads as a dozen components
+ * popping instead of one page fading.
  */
 const SWITCHING_CLASS = "theme-switching";
+
+/** Marks <html> only while a View Transition is capturing. See index.css. */
+const CAPTURING_CLASS = "theme-capturing";
+
+/**
+ * Roughly the token fade in index.css. Used to release the suppression: the
+ * class has to outlive the animation, or elements start transitioning again
+ * mid-fade and desync, but leaving it on is only a cosmetic cost (hovers stop
+ * animating for a moment), so erring long is safe.
+ */
+const SWITCHING_HOLD_MS = 450;
 
 function readStoredTheme(): Theme {
   if (typeof window === "undefined") return "system";
@@ -108,21 +121,25 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
    */
   const commitTheme = useCallback(
     (next: Theme) => {
+      const root = document.documentElement;
+      root.classList.add(SWITCHING_CLASS);
+
       if (
         window.matchMedia(REDUCED_MOTION_QUERY).matches ||
         !document.startViewTransition
       ) {
         applyTheme(next);
+        window.setTimeout(
+          () => root.classList.remove(SWITCHING_CLASS),
+          SWITCHING_HOLD_MS,
+        );
         return;
       }
 
-      const root = document.documentElement;
-
-      // The new snapshot is taken one frame after the callback, so freeze the
-      // token transition across the capture. Scoped to `html` itself: a blanket
-      // reset on `*` would also suspend card hovers and the navbar backdrop,
-      // which then visibly snap back once the class comes off.
-      root.classList.add(SWITCHING_CLASS);
+      // Only the View Transition path needs the tokens frozen: the new snapshot
+      // is captured one frame later, and a fade still in flight would be caught
+      // part-way. The fallback path above relies on that fade.
+      root.classList.add(CAPTURING_CLASS);
 
       // Starting a transition implicitly skips any that is already running, so
       // rapid clicks advance the cycle instead of queueing up.
@@ -133,6 +150,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         if (activeTransitionRef.current === transition) {
           activeTransitionRef.current = null;
           root.classList.remove(SWITCHING_CLASS);
+          root.classList.remove(CAPTURING_CLASS);
         }
       };
 

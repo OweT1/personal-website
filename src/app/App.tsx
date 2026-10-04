@@ -7,7 +7,12 @@ import {
 } from "react-router-dom";
 import "./App.css";
 
-import { BASE_URL, MODULE_URL, BLOG_URL } from "@/constants/paths";
+import {
+  BASE_URL,
+  BLOG_ENABLED,
+  BLOG_URL,
+  MODULE_URL,
+} from "@/constants/paths";
 import { EASE_OUT_EXPO } from "@/components/motion/variants";
 import { NavBar } from "@/components/generalComponents/navbar";
 import { ScrollProgressBar } from "@/components/generalComponents/scroll-progress-bar";
@@ -37,8 +42,12 @@ function AnimatedRoutes() {
         <Routes location={location}>
           <Route path="/" element={<HomePage />} />
           <Route path={MODULE_URL} element={<ModulePage />} />
-          <Route path={`${BLOG_URL}/:slug`} element={<BlogPostPage />} />
-          <Route path={BLOG_URL} element={<BlogPage />} />
+          {BLOG_ENABLED && (
+            <>
+              <Route path={`${BLOG_URL}/:slug`} element={<BlogPostPage />} />
+              <Route path={BLOG_URL} element={<BlogPage />} />
+            </>
+          )}
         </Routes>
       </motion.main>
     </AnimatePresence>

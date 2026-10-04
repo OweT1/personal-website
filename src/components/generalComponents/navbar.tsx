@@ -3,7 +3,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Menu, X } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { BLOG_URL, MODULE_URL } from "@/constants/paths";
+import { BLOG_ENABLED, BLOG_URL, MODULE_URL } from "@/constants/paths";
 import { buttonVariants } from "@/constants/themes";
 import { ThemeToggle } from "@/components/generalComponents/theme-toggle";
 import { useScrollSpy } from "@/hooks/use-scroll-spy";
@@ -64,26 +64,27 @@ export function NavBar() {
   );
 
   const navItems = useMemo<NavItem[]>(
-    () => [
-      ...sections.map((section) => ({
-        key: section.id,
-        label: section.label,
-        isActive: isHome && activeId === section.id,
-        onClick: () => scrollToSection(section.id),
-      })),
-      {
-        key: MODULE_URL,
-        label: "Module Reviews",
-        isActive: location.pathname.startsWith(MODULE_URL),
-        onClick: () => goToRoute(MODULE_URL),
-      },
-      {
-        key: BLOG_URL,
-        label: "Blog",
-        isActive: location.pathname.startsWith(BLOG_URL),
-        onClick: () => goToRoute(BLOG_URL),
-      },
-    ],
+    () =>
+      [
+        ...sections.map((section) => ({
+          key: section.id,
+          label: section.label,
+          isActive: isHome && activeId === section.id,
+          onClick: () => scrollToSection(section.id),
+        })),
+        {
+          key: MODULE_URL,
+          label: "Module Reviews",
+          isActive: location.pathname.startsWith(MODULE_URL),
+          onClick: () => goToRoute(MODULE_URL),
+        },
+        BLOG_ENABLED && {
+          key: BLOG_URL,
+          label: "Blog",
+          isActive: location.pathname.startsWith(BLOG_URL),
+          onClick: () => goToRoute(BLOG_URL),
+        },
+      ].filter((item): item is NavItem => Boolean(item)),
     [activeId, goToRoute, isHome, location.pathname, scrollToSection],
   );
 

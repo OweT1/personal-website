@@ -45,6 +45,9 @@
         } catch (e) {
           /* Private browsing / storage disabled. */
         }
+        /* Anything unset or unrecognised means "not chosen yet", which follows
+           the OS. Note nothing is written back here: `system` is only a default,
+           so it must not look like a decision the visitor made. */
         if (stored !== "light" && stored !== "dark" && stored !== "system") {
           stored = "system";
         }

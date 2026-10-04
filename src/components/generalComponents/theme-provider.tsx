@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
-  THEME_ORDER,
   ThemeContext,
   type Theme,
   type ThemeContextValue,
@@ -181,25 +180,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     [applyTheme],
   );
 
-  // Mirrors `theme` synchronously. `toggleTheme` reads this rather than the
-  // state value because two clicks in the same task would each close over the
-  // same rendered `theme` and compute the same next value, so the cycle would
-  // stall instead of advancing.
-  const themeRef = useRef(theme);
-  themeRef.current = theme;
-
-  const toggleTheme = useCallback(() => {
-    const currentIndex = THEME_ORDER.indexOf(themeRef.current);
-    const next = THEME_ORDER[(currentIndex + 1) % THEME_ORDER.length];
-    // Advance the mirror before committing, so a following click in the same
-    // task reads the new value even though React has not re-rendered yet.
-    themeRef.current = next;
-    commitTheme(next);
-  }, [commitTheme]);
-
   const value = useMemo<ThemeContextValue>(
-    () => ({ theme, resolvedTheme, setTheme: commitTheme, toggleTheme }),
-    [theme, resolvedTheme, commitTheme, toggleTheme],
+    () => ({ theme, resolvedTheme, setTheme: commitTheme }),
+    [theme, resolvedTheme, commitTheme],
   );
 
   return (

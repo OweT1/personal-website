@@ -12,6 +12,18 @@ const STORAGE_KEY = "owen-theme";
 const DARK_QUERY = "(prefers-color-scheme: dark)";
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 
+if (import.meta.env.DEV) {
+  // The one value that genuinely has to exist in two places: this module writes
+  // the key, and the boot script in index.html reads it. Warn loudly if they
+  // ever diverge, rather than silently losing the user's theme on reload.
+  const bootKey = document.documentElement.dataset.themeKey;
+  if (bootKey && bootKey !== STORAGE_KEY) {
+    console.warn(
+      `[theme] Boot script reads "${bootKey}" but ThemeProvider writes "${STORAGE_KEY}". The chosen theme will not survive a reload.`,
+    );
+  }
+}
+
 /**
  * Marks <html> for the duration of a theme change, so descendant colour
  * transitions stop competing with the token fade on <html>. Without it, each
@@ -32,11 +44,20 @@ const CAPTURING_CLASS = "theme-capturing";
  */
 const SWITCHING_HOLD_MS = 450;
 
-function readStoredTheme(): Theme {
-  if (typeof window === "undefined") return "system";
-  const stored = window.localStorage.getItem(STORAGE_KEY);
-  return stored === "light" || stored === "dark" || stored === "system"
-    ? stored
+/**
+ * The boot script in index.html already resolved the initial theme and published
+ * it on `data-theme`, so adopting that value keeps a single implementation of
+ * those rules. Reading localStorage again here would be a second copy that could
+ * disagree with what is actually on screen.
+ *
+ * Falls back to "system" if the script did not run - a CSP blocking inline
+ * scripts being the realistic case. Still correct, because the mount effect
+ * below applies the resolved theme, but it reintroduces the light-token flash.
+ */
+function readInitialTheme(): Theme {
+  const applied = document.documentElement.dataset.theme;
+  return applied === "light" || applied === "dark" || applied === "system"
+    ? applied
     : "system";
 }
 
@@ -46,7 +67,7 @@ function prefersDark(): boolean {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>(readStoredTheme);
+  const [theme, setThemeState] = useState<Theme>(readInitialTheme);
 
   // Track the OS preference so "system" stays live when the user flips it.
   const [systemIsDark, setSystemIsDark] = useState(prefersDark);

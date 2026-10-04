@@ -16,6 +16,53 @@
     <meta property="og:type" content="website" />
     <title>Owen's Website</title>
     <link rel="icon" type="image/png" href="favicon.png" />
+    <script>
+      /* Applies the stored theme before first paint.
+
+         `<html>` only gets `.dark` from a mount effect in ThemeProvider, and
+         effects run after the bundle has downloaded, parsed and executed - so a
+         dark-mode visitor gets a frame of light tokens painted first. This runs
+         synchronously in `<head>`, before `<body>` is even parsed, so the first
+         painted frame is already the right theme.
+
+         This block is the ONLY implementation of the initial-theme rules. It
+         publishes what it decided on `data-theme`, and ThemeProvider adopts
+         that value instead of re-deriving it, so the two can't drift.
+
+         CSP: an inline script needs a nonce or a hash in `script-src`. Nothing
+         sets a policy today (GitHub Pages cannot send response headers without
+         a proxy), but if one is ever added, either hash this block or move it
+         to `public/theme-boot.js` and load it as a plain blocking
+         `<script src="...">` - no `defer`, no `async`, no `type="module"`, or it
+         will run after first paint and the flash comes back. */
+      (function () {
+        var KEY = "owen-theme";
+        var root = document.documentElement;
+
+        var stored;
+        try {
+          stored = localStorage.getItem(KEY);
+        } catch (e) {
+          /* Private browsing / storage disabled. */
+        }
+        if (stored !== "light" && stored !== "dark" && stored !== "system") {
+          stored = "system";
+        }
+
+        var isDark =
+          stored === "dark" ||
+          (stored === "system" &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+        root.dataset.theme = stored;
+        /* Echoed back so ThemeProvider can warn in dev if the two copies of KEY
+           ever diverge - the one thing that still has to be written twice. */
+        root.dataset.themeKey = KEY;
+
+        root.classList.toggle("dark", isDark);
+        root.style.colorScheme = isDark ? "dark" : "light";
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

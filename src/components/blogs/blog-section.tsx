@@ -1,21 +1,27 @@
-import { BlogPostPreview } from "@/components/blogs/blog-post-preview";
 import { BlogPost } from "@/data/blogs";
+import { BlogPostPreview } from "@/components/blogs/blog-post-preview";
+import { RevealGroup, RevealItem } from "@/components/motion/reveal";
 
 interface BlogSectionProps {
   posts: BlogPost[];
 }
 
 export function BlogSection({ posts }: BlogSectionProps) {
+  if (posts.length === 0) {
+    return (
+      <p className="text-center text-ink-subtle py-12">
+        No posts yet. Check back soon!
+      </p>
+    );
+  }
+
   return (
-    <div className="space-y-6">
+    <RevealGroup className="space-y-6" stagger={0.08}>
       {posts.map((post) => (
-        <div
-          key={post.id}
-          className="border rounded-lg shadow overflow-hidden hover:shadow-lg transition-shadow"
-        >
+        <RevealItem key={post.id}>
           <BlogPostPreview post={post} />
-        </div>
+        </RevealItem>
       ))}
-    </div>
+    </RevealGroup>
   );
 }

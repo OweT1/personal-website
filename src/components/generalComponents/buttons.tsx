@@ -1,21 +1,24 @@
-import { BASE_URL, BLOG_URL } from "@/constants/paths";
+import { useNavigate } from "react-router-dom";
+
+import { BLOG_URL } from "@/constants/paths";
 import { buttonVariants } from "@/constants/themes";
 
 export function HomeButton() {
+  const navigate = useNavigate();
+
   return (
-    <button
-      onClick={() => (window.location.href = BASE_URL)}
-      className={`mb-8 ${buttonVariants.primary}`}
-    >
+    <button onClick={() => navigate("/")} className={`mb-8 ${buttonVariants.primary}`}>
       ← Back to Home
     </button>
   );
 }
 
 export function BlogButton() {
+  const navigate = useNavigate();
+
   return (
     <button
-      onClick={() => (window.location.href = `${BASE_URL}${BLOG_URL}`)}
+      onClick={() => navigate(BLOG_URL)}
       className={`mb-8 ${buttonVariants.primary}`}
     >
       ← Back to Blog

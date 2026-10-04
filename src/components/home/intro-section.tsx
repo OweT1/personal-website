@@ -1,6 +1,8 @@
 import { FaGithub, FaLinkedin, FaFilePdf } from "react-icons/fa";
 import { IoIosMail } from "react-icons/io";
+import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 
 import profilePic from "@/assets/Owen_Picture.jpg";
 import { MODULE_URL } from "@/constants/paths";
@@ -8,78 +10,139 @@ import { buttonVariants } from "@/constants/themes";
 
 export function IntroSection() {
   const navigate = useNavigate();
+  const reduceMotion = useReducedMotion();
+  const sectionRef = useRef<HTMLElement>(null);
+
+  // Portrait drifts and scales slightly as the hero scrolls away.
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end start"],
+  });
+  const imageY = useTransform(scrollYProgress, [0, 1], [0, 70]);
+  const imageScale = useTransform(scrollYProgress, [0, 1], [1, 0.92]);
+  const textY = useTransform(scrollYProgress, [0, 1], [0, 40]);
+
+  const container = {
+    hidden: {},
+    visible: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
+  };
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as const },
+    },
+  };
+
   return (
     <section
+      ref={sectionRef}
       id="home"
       className="flex flex-col md:flex-row items-center justify-between gap-12"
     >
-      <div className="flex-1 text-center md:text-left space-y-6">
-        <p className="text-sm font-semibold uppercase tracking-widest text-red-600">
-          B.Sc. (Hons) Data Science & Analytics · NUS
-        </p>
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900">
-          Owen Tan Keng Leng
-        </h1>
-        <p className="text-lg md:text-xl text-slate-500 leading-relaxed max-w-lg mx-auto md:mx-0">
-          Data and Machine Learning Engineer with hands-on industry experience
-          at GIC, Temasek, and DBS. I build scalable, data-driven systems from
-          LLM pipelines to optimisation tools.
-        </p>
-
-        <div className="flex items-center justify-center md:justify-start gap-4 pt-2">
-          <a
-            href="https://github.com/OweT1"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={buttonVariants.icon}
-            aria-label="GitHub"
+      <motion.div
+        className="flex-1 text-center md:text-left space-y-6"
+        style={reduceMotion ? undefined : { y: textY }}
+      >
+        <motion.div variants={container} initial="hidden" animate="visible">
+          <motion.p
+            variants={item}
+            className="text-sm font-semibold uppercase tracking-widest text-brand"
           >
-            <FaGithub size={24} />
-          </a>
+            B.Sc. (Hons) Data Science &amp; Analytics · NUS
+          </motion.p>
 
-          <a
-            href="https://linkedin.com/in/owentankengleng"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={buttonVariants.icon}
-            aria-label="LinkedIn"
+          <motion.h1
+            variants={item}
+            className="text-4xl md:text-5xl font-bold tracking-tight text-ink"
           >
-            <FaLinkedin size={24} />
-          </a>
+            Owen Tan Keng Leng
+          </motion.h1>
 
-          <a
-            href="mailto:owentan2021@gmail.com"
-            className={buttonVariants.icon}
-            aria-label="Email"
+          <motion.p
+            variants={item}
+            className="text-lg md:text-xl text-ink-muted leading-relaxed max-w-lg mx-auto md:mx-0"
           >
-            <IoIosMail size={24} />
-          </a>
+            Data and Machine Learning Engineer with hands-on industry experience
+            at GIC, Temasek, and DBS. I build scalable, data-driven systems from
+            LLM pipelines to optimisation tools.
+          </motion.p>
 
-          <a
-            href="OwenTanKengLeng_Resume.pdf"
-            download="Owen_Resume.pdf"
-            className={`${buttonVariants.primary} ml-2`}
+          <motion.div
+            variants={item}
+            className="flex items-center justify-center md:justify-start gap-4 pt-2"
           >
-            <FaFilePdf size={16} />
-            Resume
-          </a>
+            <a
+              href="https://github.com/OweT1"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={buttonVariants.icon}
+              aria-label="GitHub"
+            >
+              <FaGithub size={24} />
+            </a>
 
-          <button
-            onClick={() => navigate(MODULE_URL)}
-            className={buttonVariants.secondary}
-          >
-            Module Reviews
-          </button>
-        </div>
-      </div>
+            <a
+              href="https://linkedin.com/in/owentankengleng"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={buttonVariants.icon}
+              aria-label="LinkedIn"
+            >
+              <FaLinkedin size={24} />
+            </a>
 
-      <div className="relative shrink-0">
+            <a
+              href="mailto:owentan2021@gmail.com"
+              className={buttonVariants.icon}
+              aria-label="Email"
+            >
+              <IoIosMail size={24} />
+            </a>
+
+            <a
+              href="OwenTanKengLeng_Resume.pdf"
+              download="Owen_Resume.pdf"
+              className={`${buttonVariants.primary} ml-2`}
+            >
+              <FaFilePdf size={16} />
+              Resume
+            </a>
+
+            <button
+              onClick={() => navigate(MODULE_URL)}
+              className={buttonVariants.secondary}
+            >
+              Module Reviews
+            </button>
+          </motion.div>
+        </motion.div>
+      </motion.div>
+
+      <motion.div
+        className="relative shrink-0"
+        style={reduceMotion ? undefined : { y: imageY, scale: imageScale }}
+        initial={
+          reduceMotion ? false : { opacity: 0, scale: 0.85, rotate: -4 }
+        }
+        animate={{ opacity: 1, scale: 1, rotate: 0 }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      >
+        {/* Soft accent glow behind the portrait. */}
+        <div
+          aria-hidden="true"
+          className="absolute -inset-6 rounded-full bg-brand/10 blur-2xl"
+        />
         <img
           src={profilePic}
           alt="Owen Tan Keng Leng"
-          className="w-56 h-56 md:w-64 md:h-64 object-cover rounded-full border-4 border-white shadow-xl"
+          width={256}
+          height={256}
+          className="relative w-56 h-56 md:w-64 md:h-64 object-cover rounded-full
+                     border-4 border-surface shadow-xl"
         />
-      </div>
+      </motion.div>
     </section>
   );
 }

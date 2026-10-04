@@ -1,9 +1,27 @@
 import { useState, useMemo, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 
 import { HomeButton } from "@/components/generalComponents/buttons";
+import { Reveal } from "@/components/motion/reveal";
 import { moduleReviewsData } from "@/data/reviews-data";
+
+/** Chevron used by both collapsible levels. */
+function Chevron({ rotated }: { rotated: boolean }) {
+  const reduceMotion = useReducedMotion();
+
+  return (
+    <motion.span
+      animate={reduceMotion ? undefined : { rotate: rotated ? 180 : 0 }}
+      transition={{ duration: 0.25, ease: "easeOut" }}
+      className="inline-block text-ink-subtle"
+      aria-hidden="true"
+    >
+      ▾
+    </motion.span>
+  );
+}
 
 export function ModulePage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -97,9 +115,9 @@ export function ModulePage() {
     <div className="max-w-4xl mx-auto px-6 pt-20">
       <HomeButton />
 
-      <h1 className="text-4xl font-bold mb-6">NUS Module Reviews</h1>
+      <h1 className="text-4xl font-bold mb-6 text-ink">NUS Module Reviews</h1>
       {/* Top body */}
-      <div className="mb-2">
+      <div className="mb-2 text-ink-muted">
         <div>
           Honest reviews of the modules I have taken at NUS, covering workload,
           assessments, and whether they are worth your time.
@@ -141,13 +159,18 @@ export function ModulePage() {
                 setHighlightedIndex(-1);
               }
             }}
-            className="w-full px-4 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+            className="w-full px-4 py-2 border border-line-strong rounded-md bg-surface
+                       text-ink placeholder:text-ink-subtle
+                       focus:outline-none focus:ring-2 focus:ring-brand"
           />
           {/* Clear Search Results button */}
           {searchTerm !== "" && (
             <button
               onClick={() => setSearchTerm("")}
-              className="absolute right-1 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 hover:cursor-pointer transition-colors p-1 rounded hover:bg-gray-100"
+              aria-label="Clear search"
+              className="absolute right-1 top-1/2 -translate-y-1/2 text-ink-subtle
+                         hover:text-ink hover:cursor-pointer transition-colors p-1
+                         rounded hover:bg-surface-muted"
             >
               ×
             </button>
@@ -155,8 +178,12 @@ export function ModulePage() {
         </div>
         {/* Search Results Window */}
         {hasFocus && searchTerm !== "" && filteredModules.length > 0 && (
-          <div
-            className="absolute z-10 w-full mt-1 border border-gray-300 rounded bg-white shadow-md"
+          <motion.div
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.15, ease: "easeOut" }}
+            className="absolute z-10 w-full mt-1 border border-line-strong rounded
+                       bg-surface shadow-lg overflow-hidden"
             onMouseDown={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -167,21 +194,21 @@ export function ModulePage() {
               <div
                 key={module.id}
                 onClick={() => onClickModule(module.moduleCode)}
-                className={`w-full px-4 py-2 text-left hover:bg-gray-100 cursor-pointer ${
-                  index === highlightedIndex ? "bg-blue-50" : ""
+                className={`w-full px-4 py-2 text-left hover:bg-surface-hover cursor-pointer ${
+                  index === highlightedIndex ? "bg-brand-soft" : ""
                 }`}
               >
-                <div className="font-semibold">{module.moduleCode}</div>
-                <div className="text-sm text-gray-500">{module.moduleName}</div>
+                <div className="font-semibold text-ink">{module.moduleCode}</div>
+                <div className="text-sm text-ink-subtle">{module.moduleName}</div>
               </div>
             ))}
-          </div>
+          </motion.div>
         )}
       </div>
 
       {/* Display grouped modules */}
       {yearsemesters.length === 0 ? (
-        <p className="text-center text-gray-500">No modules found.</p>
+        <p className="text-center text-ink-subtle">No modules found.</p>
       ) : (
         <>
           {yearsemesters.map((ys) => {
@@ -191,60 +218,89 @@ export function ModulePage() {
             const displayName = `Year ${year.charAt(year.length - 1)} Semester ${semester}`;
             const isOpen = openSections.has(ys);
             return (
-              <div
-                key={ys}
-                className="mb-6 border border-1.5 rounded-lg overflow-hidden shadow bg-white"
-              >
-                {/* Header for collapsible section */}
-                <div
-                  onClick={() => toggleSection(ys)}
-                  className="flex w-full items-center justify-between px-6 py-4 bg-gray-100 cursor-pointer hover:bg-gray-200"
-                >
-                  <span className="font-semibold">{displayName}</span>
-                  {/* Chevron icon that rotates when open */}
-                  <span
-                    className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+              <Reveal key={ys} y={16} className="mb-6">
+                <div className="border border-line rounded-lg overflow-hidden shadow-sm bg-surface">
+                  {/* Header for collapsible section */}
+                  <button
+                    onClick={() => toggleSection(ys)}
+                    aria-expanded={isOpen}
+                    className="flex w-full items-center justify-between px-6 py-4
+                               bg-surface-muted text-ink cursor-pointer
+                               hover:bg-surface-hover transition-colors"
                   >
-                    ▾
-                  </span>
-                </div>
-                {/* Content area */}
-                {!isOpen ? null : (
-                  <div className="divide-y divide-gray-200">
-                    {modulesInYear.map((module) => (
-                      <div
-                        key={module.id}
-                        className="mb-2 mt-2 border border-gray-300 rounded overflow-hidden shadow-sm bg-white w-9/10 mx-auto"
+                    <span className="font-semibold">{displayName}</span>
+                    <Chevron rotated={isOpen} />
+                  </button>
+
+                  {/* Content area - animates open/closed height */}
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        key="content"
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.28, ease: "easeInOut" }}
+                        className="overflow-hidden"
                       >
-                        <button
-                          onClick={() => toggleModule(module.id)}
-                          className="w-full flex items-center justify-between px-4 py-3 text-left bg-gray-50 hover:bg-gray-100 transition focus:outline-none focus:ring-2 focus:ring-red-500 hover:cursor-pointer"
-                        >
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-lg">
-                              {module.moduleCode} {module.moduleName}
-                            </h3>
-                          </div>
-                          <span
-                            className={`transition-transform duration-200 ${openModules.has(module.id) ? "rotate-180" : ""}`}
-                          >
-                            ▾
-                          </span>
-                        </button>
-                        {openModules.has(module.id) && (
-                          <div className="border-t border-gray-200 bg-white">
-                            <div className="p-4 prose prose-sm max-w-none markdown">
-                              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                {module.content}
-                              </ReactMarkdown>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+                        <div className="divide-y divide-line">
+                          {modulesInYear.map((module) => {
+                            const moduleOpen = openModules.has(module.id);
+                            return (
+                              <div
+                                key={module.id}
+                                className="m-2 border border-line rounded overflow-hidden
+                                           shadow-sm bg-surface w-9/10 mx-auto"
+                              >
+                                <button
+                                  onClick={() => toggleModule(module.id)}
+                                  aria-expanded={moduleOpen}
+                                  className="w-full flex items-center justify-between px-4
+                                             py-3 text-left bg-surface-hover hover:bg-surface-muted
+                                             transition-colors focus:outline-none
+                                             focus:ring-2 focus:ring-brand inset-ring-0
+                                             hover:cursor-pointer"
+                                >
+                                  <div className="flex-1">
+                                    <h3 className="font-semibold text-lg text-ink">
+                                      {module.moduleCode} {module.moduleName}
+                                    </h3>
+                                  </div>
+                                  <Chevron rotated={moduleOpen} />
+                                </button>
+
+                                <AnimatePresence initial={false}>
+                                  {moduleOpen && (
+                                    <motion.div
+                                      key="review"
+                                      initial={{ height: 0, opacity: 0 }}
+                                      animate={{ height: "auto", opacity: 1 }}
+                                      exit={{ height: 0, opacity: 0 }}
+                                      transition={{
+                                        duration: 0.28,
+                                        ease: "easeInOut",
+                                      }}
+                                      className="overflow-hidden"
+                                    >
+                                      <div className="border-t border-line bg-surface">
+                                        <div className="p-4 prose prose-sm max-w-none markdown">
+                                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                            {module.content}
+                                          </ReactMarkdown>
+                                        </div>
+                                      </div>
+                                    </motion.div>
+                                  )}
+                                </AnimatePresence>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </Reveal>
             );
           })}
         </>

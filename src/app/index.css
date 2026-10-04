@@ -1,28 +1,355 @@
 @import "tailwindcss";
 
-/* Global Styles */
-html {
-  scroll-behavior: smooth;
+/* Tailwind v4 defaults the `dark:` variant to prefers-color-scheme.
+   Re-point it at a `.dark` class so the toggle can override the OS setting. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ---------------------------------------------------------------------------
+   Registering the colour tokens as real typed custom properties is what makes
+   the theme change animatable. Unregistered custom properties jump instantly
+   from one value to the next; registered ones interpolate, and because they
+   inherit, every descendant using var(--surface) etc. re-resolves each frame.
+   This is the fallback path for browsers without the View Transitions API.
+--------------------------------------------------------------------------- */
+@property --canvas {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #fafafa;
+}
+@property --surface {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #ffffff;
+}
+@property --surface-muted {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #f1f5f9;
+}
+@property --surface-hover {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #f8fafc;
+}
+@property --line {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #e2e8f0;
+}
+@property --line-strong {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #cbd5e1;
+}
+@property --ink {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #0f172a;
+}
+@property --ink-muted {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #475569;
+}
+@property --ink-subtle {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #94a3b8;
+}
+@property --brand {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #dc2626;
+}
+@property --brand-hover {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #b91c1c;
+}
+@property --brand-soft {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #fef2f2;
+}
+@property --brand-ink {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #ffffff;
+}
+@property --nav-bg {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgb(255 255 255 / 0.8);
 }
 
-body {
-  background-color: #fafafa;
-  color: #0f172a;
-  margin: 0;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-family:
-    "Inter",
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    "Helvetica Neue",
-    Arial,
-    sans-serif;
-  text-rendering: optimizeLegibility;
+/* Position of the leading edge of the directional theme wipe, measured from
+   the right-hand side of the viewport. Registered so it can be interpolated;
+   the initial value keeps the overlay fully opaque before JS animates it. */
+@property --theme-wipe {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 122%;
 }
 
-.markdown > * {
-  all: revert;
+/* ---------------------------------------------------------------------------
+   Semantic theme tokens.
+   Raw variables live here; @theme inline maps them to Tailwind utilities
+   (bg-surface, text-ink, border-line, ...) that resolve at runtime.
+--------------------------------------------------------------------------- */
+:root {
+  --canvas: #fafafa;
+  --surface: #ffffff;
+  --surface-muted: #f1f5f9;
+  --surface-hover: #f8fafc;
+  --line: #e2e8f0;
+  --line-strong: #cbd5e1;
+  --ink: #0f172a;
+  --ink-muted: #475569;
+  --ink-subtle: #94a3b8;
+  --brand: #dc2626;
+  --brand-hover: #b91c1c;
+  --brand-soft: #fef2f2;
+  --brand-ink: #ffffff;
+  --shadow-color: 15 23 42;
+  --nav-bg: rgb(255 255 255 / 0.8);
+}
+
+.dark {
+  --canvas: #080b14;
+  --surface: #0f172a;
+  --surface-muted: #1e293b;
+  --surface-hover: #172033;
+  --line: #1e293b;
+  --line-strong: #334155;
+  --ink: #e2e8f0;
+  --ink-muted: #94a3b8;
+  --ink-subtle: #64748b;
+  --brand: #f87171;
+  --brand-hover: #fca5a5;
+  --brand-soft: #2a1416;
+  --brand-ink: #1a0a0a;
+  --shadow-color: 0 0 0;
+  --nav-bg: rgb(8 11 20 / 0.8);
+}
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-hover: var(--surface-hover);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-subtle: var(--ink-subtle);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-ink: var(--brand-ink);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
+
+    /* This transition list is the cross-fade. The tokens are registered with
+       `@property` above, so flipping the `dark` class interpolates them and
+       every surface that references one fades with it - no JS animation and
+       no overlay involved.
+
+       Duration must stay in step with `WIPE_DURATION_MS` in
+       theme-provider.tsx, which owns how long `.theme-switching` suppresses
+       element transitions while the wipe is on screen. */
+    transition:
+      --canvas 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+      --surface 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+      --surface-muted 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+      --surface-hover 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+      --line 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+      --line-strong 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+      --ink 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+      --ink-muted 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+      --ink-subtle 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+      --brand 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+      --brand-hover 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+      --brand-soft 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+      --brand-ink 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+      --nav-bg 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* While the tokens interpolate, element-level transitions would lag behind
+     them (cards, the body, buttons all easing toward a moving target), which
+     smears the fade. Suspending them keeps the whole page in lockstep. */
+  html.theme-switching *,
+  html.theme-switching *::before,
+  html.theme-switching *::after {
+    transition: none !important;
+  }
+
+  body {
+    background-color: var(--canvas);
+    color: var(--ink);
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-family:
+      "Inter",
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      Roboto,
+      "Helvetica Neue",
+      Arial,
+      sans-serif;
+    text-rendering: optimizeLegibility;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
+  }
+
+  /* Colour-scheme tells the browser to render native controls (scrollbars,
+     date pickers, autofill) against the current theme. */
+  :root {
+    color-scheme: light;
+  }
+
+  :root.dark {
+    color-scheme: dark;
+  }
+
+  ::selection {
+    background-color: var(--brand);
+    color: var(--brand-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* `all: revert` resets UA-authored markdown styling back to defaults.
+     These two declarations re-apply the themed colours, which revert would
+     otherwise hardcode to black. */
+  .markdown > * {
+    all: revert;
+    color: inherit;
+    background-color: transparent;
+  }
+
+  .markdown a {
+    color: var(--brand);
+  }
+
+  .markdown code {
+    background-color: var(--surface-muted);
+    color: var(--ink);
+    border-radius: 0.25rem;
+    padding: 0.15em 0.35em;
+  }
+
+  .markdown pre {
+    background-color: var(--surface-muted) !important;
+  }
+
+  .markdown hr {
+    border-color: var(--line);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Theme reveal.
+
+   A fixed overlay filled with the outgoing theme's canvas colour is shrunk
+   away by the provider via the Web Animations API; see theme-provider.tsx.
+   Nothing is needed here beyond suspending the token transitions so the page
+   underneath is fully repainted by the time the overlay uncovers it.
+--------------------------------------------------------------------------- */
+
+/* Honour the OS-level reduced-motion preference for every CSS-driven
+   transition, including the navbar backdrop and card hovers. Motion's
+   JS-driven animations short-circuit separately via useReducedMotion(). */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* A theme cross-fade is a pure opacity change with no movement or scaling,
+     so reduced motion has no reason to suppress it. Restored at a shorter
+     duration: `html` outranks the `*` reset above on specificity, and the
+     `!important` on both sides is what keeps the token fade alive while every
+     other transition in the page stays disabled. */
+  html {
+    transition:
+      --canvas 0.12s linear !important,
+      --surface 0.12s linear !important,
+      --surface-muted 0.12s linear !important,
+      --surface-hover 0.12s linear !important,
+      --line 0.12s linear !important,
+      --line-strong 0.12s linear !important,
+      --ink 0.12s linear !important,
+      --ink-muted 0.12s linear !important,
+      --ink-subtle 0.12s linear !important,
+      --brand 0.12s linear !important,
+      --brand-hover 0.12s linear !important,
+      --brand-soft 0.12s linear !important,
+      --brand-ink 0.12s linear !important,
+      --nav-bg 0.12s linear !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Directional theme wipe.
+
+   A uniform token cross-fade cannot travel: every surface changes at the same
+   instant. To move the change from right to left, a full-screen overlay holds
+   the *outgoing* canvas colour and its opacity is clipped by a soft edge that
+   sweeps leftwards. Anything the edge has not reached is still covered; once
+   it passes, the new theme underneath is fully repainted and revealed.
+
+   The trade-off is that covered regions show a flat colour rather than the old
+   content. A soft gradient edge keeps it reading as a dissolve. Preserving the
+   old content in that region would require a pixel snapshot, i.e. the View
+   Transitions API.
+   --------------------------------------------------------------------------- */
+
+.theme-wipe-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+
+  /* `to left` puts 0% at the right edge, so --theme-wipe counts inwards from
+     the right. Opaque up to the edge minus the soft width, then a ramp down to
+     fully transparent at the edge itself. A hard `transparent` stop at the same
+     offset would give a crisp line instead of a dissolve. */
+  mask-image: linear-gradient(
+    to left,
+    rgb(0 0 0 / 1) calc(var(--theme-wipe) - var(--theme-wipe-softness)),
+    rgb(0 0 0 / 1) var(--theme-wipe),
+    rgb(0 0 0 / 0) var(--theme-wipe)
+  );
+  -webkit-mask-image: linear-gradient(
+    to left,
+    rgb(0 0 0 / 1) calc(var(--theme-wipe) - var(--theme-wipe-softness)),
+    rgb(0 0 0 / 1) var(--theme-wipe),
+    rgb(0 0 0 / 0) var(--theme-wipe)
+  );
+}
+
+.theme-wipe-overlay {
+  /* Width of the dissolve ramp. Wide enough to read as a fade rather than a
+     wipe, narrow enough that the new theme is visible early on. */
+  --theme-wipe-softness: 26%;
 }

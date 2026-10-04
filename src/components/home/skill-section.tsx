@@ -1,8 +1,11 @@
 import { useState } from "react";
+
 import { Skill, skills } from "@/data/skills";
 import { SectionHeader } from "@/components/section-components";
+import { RevealGroup, RevealItem } from "@/components/motion/reveal";
+import { pillVariants } from "@/constants/themes";
 
-function SkillTab({ id, skillCategory, skillNames }: Skill) {
+function SkillTab({ skillCategory, skillNames }: Skill) {
   const [categoryIsOpen, setCategoryIsOpen] = useState(false);
 
   const toggleCategory = () => {
@@ -10,30 +13,29 @@ function SkillTab({ id, skillCategory, skillNames }: Skill) {
   };
 
   return (
-    <div
-      key={id}
-      className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"
-    >
-      {/* Clickable Header */}
+    <div className="bg-surface rounded-xl shadow-sm border border-line overflow-hidden transition-colors duration-300 hover:border-brand/30">
       <button
-        onClick={() => toggleCategory()}
-        className="w-full px-6 py-4 flex items-center justify-between 
-        hover:bg-slate-50 hover:cursor-pointer transition-colors focus:outline-none"
+        onClick={toggleCategory}
+        aria-expanded={categoryIsOpen}
+        className="w-full px-6 py-4 flex items-center justify-between
+                   hover:bg-surface-hover cursor-pointer transition-colors focus:outline-none"
       >
         <span
-          className={`font-semibold transition-colors ${categoryIsOpen ? "text-red-600" : "text-slate-700"}`}
+          className={`font-semibold transition-colors ${
+            categoryIsOpen ? "text-brand" : "text-ink"
+          }`}
         >
           {skillCategory}
         </span>
 
-        {/* Chevron Icon that rotates when open */}
         <svg
-          className={`w-5 h-5 text-slate-500 transition-transform duration-300 ${
+          className={`w-5 h-5 text-ink-subtle transition-transform duration-300 ${
             categoryIsOpen ? "rotate-180" : "rotate-0"
           }`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
+          aria-hidden="true"
         >
           <path
             strokeLinecap="round"
@@ -44,29 +46,25 @@ function SkillTab({ id, skillCategory, skillNames }: Skill) {
         </svg>
       </button>
 
-      {/* Expandable Content - Uses CSS Grid for smooth auto-height animation */}
+      {/* Uses the CSS grid 0fr->1fr trick so the panel animates to its
+          natural height without measuring it in JS. */}
       <div
         className={`grid transition-all duration-300 ease-in-out ${
-          categoryIsOpen
-            ? "grid-rows-[1fr] opacity-100"
-            : "grid-rows-[0fr] opacity-0"
+          categoryIsOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
         }`}
       >
-        {/* overflow-hidden is required here for the grid animation to work */}
         <div className="overflow-hidden">
-          <div className="px-6 pb-5 pt-2 border-t border-slate-100 flex flex-col gap-2">
+          <div className="px-6 pb-5 pt-4 border-t border-line flex flex-col gap-4">
             {skillNames.map((skillName, index) => (
               <div key={index}>
-                {/* Render each subcategory as newlines */}
-                <h4 className="text-sm font-semibold text-slate-500 mb-2">
+                <h4 className="text-sm font-semibold text-ink-subtle mb-2">
                   {skillName.skillSubCategory}:
                 </h4>
-                {/* Render the individual skills as small pills */}
                 <div className="flex flex-wrap gap-2">
                   {skillName.skillSubNames.map((skillSub, subIndex) => (
                     <span
                       key={subIndex}
-                      className="px-4 py-1.5 bg-slate-100 text-slate-600 rounded-full text-sm font-medium hover:bg-red-600 hover:text-white transition-colors cursor-default"
+                      className={`${pillVariants.base} ${pillVariants.hover}`}
                     >
                       {skillSub}
                     </span>
@@ -85,11 +83,14 @@ export function SkillSection() {
   return (
     <section id="skills">
       <SectionHeader header="Technical Skills" />
-      <div className="flex flex-col gap-3 w-full">
-        {skills.map((skill) => {
-          return <SkillTab {...skill} />;
-        })}
-      </div>
+
+      <RevealGroup className="flex flex-col gap-3 w-full" stagger={0.07}>
+        {skills.map((skill) => (
+          <RevealItem key={skill.id}>
+            <SkillTab {...skill} />
+          </RevealItem>
+        ))}
+      </RevealGroup>
     </section>
   );
 }

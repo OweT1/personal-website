@@ -1,42 +1,42 @@
 import { experiences } from "@/data/experiences";
 import { SectionHeader } from "@/components/section-components";
+import { RevealGroup, RevealItem } from "@/components/motion/reveal";
+import { cardVariants } from "@/constants/themes";
 
 export function ExperienceSection() {
   return (
     <section id="experience">
       <SectionHeader header="Work Experience" />
 
-      <div className="space-y-8">
+      <RevealGroup className="space-y-8">
         {experiences.map((job) => (
-          <div
-            key={job.id}
-            className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 
-            hover:shadow-md hover:border-red-200 transition-all duration-300"
-          >
-            <div className="flex flex-row justify-between mb-4">
-              <div className="flex flex-row justify-start">
-                <img src={job.company_logo} className="w-12.5 h-12.5 mr-4" />
-                <div className="h-12.5">
-                  <h3 className="text-xl font-bold text-slate-800">
-                    {job.role}
-                  </h3>
-                  <span className="text-red-600 font-medium">
-                    {job.company}
-                  </span>
+          <RevealItem key={job.id}>
+            <div className={`${cardVariants.base} ${cardVariants.interactive} p-6`}>
+              <div className="flex flex-col md:flex-row justify-between mb-4 gap-2">
+                <div className="flex flex-row justify-start">
+                  <img
+                    src={job.company_logo}
+                    alt={`${job.company} logo`}
+                    className="w-12.5 h-12.5 mr-4 object-contain"
+                  />
+                  <div className="h-12.5">
+                    <h3 className="text-xl font-bold text-ink">{job.role}</h3>
+                    <span className="text-brand font-medium">{job.company}</span>
+                  </div>
+                </div>
+                <div className="text-sm text-ink-subtle mt-1 md:mt-0 italic">
+                  {job.start_date} - {job.end_date}
                 </div>
               </div>
-              <div className="text-sm text-slate-400 mt-1 md:mt-0 italic">
-                {job.start_date} - {job.end_date}
-              </div>
+              <ul className="list-disc list-inside space-y-2 text-ink-muted marker:text-brand/60">
+                {job.description.map((point, i) => (
+                  <li key={i}>{point}</li>
+                ))}
+              </ul>
             </div>
-            <ul className="list-disc list-inside space-y-2 text-slate-600">
-              {job.description.map((point, i) => (
-                <li key={i}>{point}</li>
-              ))}
-            </ul>
-          </div>
+          </RevealItem>
         ))}
-      </div>
+      </RevealGroup>
     </section>
   );
 }

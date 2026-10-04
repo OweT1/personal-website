@@ -165,15 +165,33 @@
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* A View Transition snapshots the page one frame after the theme swap, so the
-     tokens have to be at their final values by then - a transition still in
-     flight would be captured part-way and the new snapshot would carry a
-     half-faded colour.
+  /* Descendants must not transition their theme colours while the tokens move.
+     A registered token is inherited, so every descendant re-resolves it each
+     frame - and an element that *also* transitions background-color is then
+     chasing a target that never stops moving. Each one restarts its own
+     transition on every frame and lands on its own schedule, which is what
+     makes a theme change read as a dozen components popping rather than one
+     page fading.
 
-     Scoped to `html` rather than reset across `*`, so card hovers and the
-     navbar backdrop keep animating normally and nothing snaps back when the
-     class comes off. */
-  html.theme-switching {
+     So for the duration of the swap the colour transitions are switched off and
+     the elements simply follow the token on `<html>`, which is the single
+     animation driving the whole change. `transition-property` is narrowed
+     instead of blanked so `opacity` / `transform` / `filter` keep working -
+     that leaves Motion's animations, the Collapse height tween and the navbar
+     slide untouched, and nothing snaps back when the class comes off. */
+  html.theme-switching,
+  html.theme-switching *,
+  html.theme-switching *::before,
+  html.theme-switching *::after {
+    transition-property: opacity, transform, filter;
+  }
+
+  /* View Transitions only: the new snapshot is captured one frame after the
+     theme swap, so <html>'s tokens have to be at their final values by then - a
+     transition still in flight would be captured part-way and the snapshot
+     would carry a half-faded colour. The fallback path deliberately does NOT
+     get this, because there the token fade is the animation. */
+  html.theme-capturing {
     transition: none !important;
   }
 
@@ -193,9 +211,6 @@
       Arial,
       sans-serif;
     text-rendering: optimizeLegibility;
-    transition:
-      background-color 0.3s ease,
-      color 0.3s ease;
   }
 
   /* Colour-scheme tells the browser to render native controls (scrollbars,

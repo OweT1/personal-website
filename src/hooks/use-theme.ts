@@ -1,22 +1,26 @@
 import { createContext, useContext } from "react";
 
 /**
- * The order the toggle cycles through. A tuple rather than a plain array so
- * `(typeof THEME_ORDER)[number]` resolves to the literal union below instead
- * of `string`.
+ * Every theme the app understands.
+ *
+ * "system" is intentionally absent from THEME_OPTIONS: it is not a choice the
+ * user makes, it is the state a visitor starts in before choosing one, and it
+ * keeps tracking the OS until they do. It still has to be part of the type
+ * because it is what a first-time visitor resolves to and what earlier
+ * versions wrote to localStorage.
  */
-export const THEME_ORDER = ["light", "dark", "system"] as const;
+export type Theme = "light" | "dark" | "system";
 
-// Automatically creates: "light" | "dark" | "system"
-export type Theme = (typeof THEME_ORDER)[number];
+/** The modes offered in the toggle, in display order. */
+export const THEME_OPTIONS = ["light", "dark"] as const;
+
+export type ThemeOption = (typeof THEME_OPTIONS)[number];
 
 export interface ThemeContextValue {
   theme: Theme;
   /** The theme actually rendered on screen, with "system" already resolved. */
   resolvedTheme: "light" | "dark";
   setTheme: (theme: Theme) => void;
-  /** Cycles light -> dark -> system -> light. */
-  toggleTheme: () => void;
 }
 
 export const ThemeContext = createContext<ThemeContextValue | null>(null);
